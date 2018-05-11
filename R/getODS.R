@@ -36,7 +36,8 @@
 #' # return Organisation data for all active GP practices
 #' getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 #'
-#' @import dplyr, jsonlite
+#' @import dplyr
+#' @import jsonlite
 #'
 #' @export
 #'
