@@ -57,6 +57,6 @@ Extracts ODS data for multiple organisations from the NHS Digitial ODS ORD API i
 
 \examples{
 # return Organisation data for all active GP practices
-getODS(Status="Active", PrimaryRoleID = "RO177", NonPrimaryRoleId = "RO76")
+getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 
 }

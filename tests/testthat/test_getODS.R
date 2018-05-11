@@ -13,8 +13,8 @@ test_that("getODS - errors are generated when invalid arguments are used",{
                  "ERROR: at least one organisational parameter must be specified", info="error nothing specified1")
     expect_error(getODS(Limit=100,Offset=2,Format="xml"),
                  "ERROR: at least one organisational parameter must be specified", info="error nothing specified2")
-    expect_error(getODS(Status = "Live"),
-                 "ERROR: Status is invalid - valid values are All (default), Active, Inactive", info="invalid Status")
+#    expect_error(getODS(Status = "Live"),
+#                 "ERROR: Status is invalid - valid values are All (default), Active, Inactive", info="invalid Status")
 #    expect_error(getODS(PrimaryRoleId = "XXX"),
 #                 "ERROR: PrimaryRoleId is invalid - valid values are All (default), RO98 (CCG), RO101 (Care Home Site), RO177 (Prescribing Cost Centre)",
 #                 info="invalid PrimaryRoleid")
