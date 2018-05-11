@@ -61,20 +61,24 @@ getODS <- function(Name             = "All",
         OrgRecordClass == "All") {
           stop("ERROR: at least one organisational parameter must be specified")
     } else if (!(tolower(Status) %in% c("all", "active","inactive"))) {
-          stop("ERROR: Status is invalid - valid values: All (default), Active, Inactive")
+          stop("ERROR: Status is invalid - valid values are All (default), Active, Inactive")
     } else if (!(tolower(PrimaryRoleId) %in% c("all", "ro98","ro101","ro177"))) {
-          stop("ERROR: PrimaryRoleId is invalid - valid values: All (default), RO98 (CCG), RO101 (Care Home Site), RO177 (Prescribing Cost Centre)")
+          stop("ERROR: PrimaryRoleId is invalid - valid values are All (default), RO98 (CCG), RO101 (Care Home Site), RO177 (Prescribing Cost Centre)")
     } else if (!(tolower(NonPrimaryRoleId) %in% c("all", "ro76","ro218"))) {
-          stop("ERROR: NonPrimaryRoleId is invalid - valid values: All (default), RO76 (GP Practice Prescribing Cost Centre), RO218 (Commissioning Hub)")
+          stop("ERROR: NonPrimaryRoleId is invalid - valid values are All (default), RO76 (GP Practice Prescribing Cost Centre), RO218 (Commissioning Hub)")
     } else if (!(tolower(OrgRecordClass) %in% c("all", "rc1","rc2"))) {
-          stop("ERROR: OrgRecordClass is invalid - valid values: All (default), RC1(Health and Social Care Organisation), RC2 (Health and Social Care Organisation Site)")
+          stop("ERROR: OrgRecordClass is invalid - valid values are All (default), RC1 (Health and Social Care Organisation), RC2 (Health and Social Care Organisation Site)")
     } else if (!(tolower(Format) %in% c("json", "xml","text/json","text/xml","application/json","application/xml"))) {
-          stop("ERROR: Format is invalid - valid values: json, xml, text/json, text/xml, application/json, application/xml")
+          stop("ERROR: Format is invalid - valid values are json, xml, text/json, text/xml, application/json, application/xml")
+    } else if (!(is.numeric(Limit))) {
+        stop("ERROR: Limit must be a numeric integer")
+    } else if (!(Limit%%1==0)){
+        stop("ERROR: Limit must be a numeric integer")
     } else if (Limit > 1000) {
         stop("ERROR: Limit must be between 1 and 1000")
-    } else if (!is.integer(Limit)) {
-        stop("ERROR: Limit must be a numeric integer")
-    } else if (!is.integer(Offset)) {
+    } else if (!(is.numeric(Offset))) {
+        stop("ERROR: Offset must be a numeric integer")
+    } else if (!(Offset%%1==0)) {
         stop("ERROR: Offset must be a numeric integer")
     }
 

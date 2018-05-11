@@ -3,6 +3,7 @@ Type: Package
 Title: Extract ODS data from the NHS Digital ODS ORD API
 Version: 0.0.0.9000
 Author: c(person("Anderson", "Georgina", , "georgina.anderson@phe.gov.uk", c("aut", "cre"))
+Maintainer: The package maintainer is <georgina.anderson@phe.gov.uk>
 Description: Functions to facilitate extraction of ODS data from the NHS Digital ODS ORD API
     Extract summary data for many organisations into a data frame
     Extract full data for a single organisation into a data frame
