@@ -29,12 +29,12 @@
 #'         Non primary Role ID, Primary Role Description, Organisation Link (API endpoint URL for full organisation record)
 #'
 #' @section Notes: View the NHS Digital ODS API Implementation Guide at
-#'          \code{\link{https://developer.nhs.uk/library/identifiers/ods-ord-api-implementation-guide/}} \cr \cr
-#'          View the NHS Digital ODS API Suite as \code{\link{https://directory.spineservices.nhs.uk/ODSAPISuite}}
+#'          \url{https://developer.nhs.uk/library/identifiers/ods-ord-api-implementation-guide/} \cr \cr
+#'          View the NHS Digital ODS API Suite at \url{https://directory.spineservices.nhs.uk/ODSAPISuite}
 #'
 #' @examples
 #' # return Organisation data for all active GP practices
-#' getODS(Status="Active", PrimaryRoleID = "RO177", NonPrimaryRoleId = "RO76")
+#' getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 #'
 #' @import dplyr
 #'

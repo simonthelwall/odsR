@@ -51,8 +51,8 @@ Extracts ODS data for multiple organisations from the NHS Digitial ODS ORD API i
 }
 \section{Notes}{
  View the NHS Digital ODS API Implementation Guide at
-         \code{\link{https://developer.nhs.uk/library/identifiers/ods-ord-api-implementation-guide/}} \cr \cr
-         View the NHS Digital ODS API Suite as \code{\link{https://directory.spineservices.nhs.uk/ODSAPISuite}}
+         \url{https://developer.nhs.uk/library/identifiers/ods-ord-api-implementation-guide/} \cr \cr
+         View the NHS Digital ODS API Suite at \url{https://directory.spineservices.nhs.uk/ODSAPISuite}
 }
 
 \examples{

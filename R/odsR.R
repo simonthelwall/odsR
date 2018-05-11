@@ -4,3 +4,6 @@
 #' @docType package
 #' @name odsR
 NULL
+globalVariables(c("fromJSON",
+                  "rbind_pages")
+                )
