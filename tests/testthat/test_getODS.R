@@ -1,5 +1,12 @@
 context("test_getODS")
 
+
+# replace this section by including test data with package later
+epraccur <- read.csv("C:\\Users\\Georgina.Anderson\\Documents\\R\\Projects\\odsR\\tests\\testthat\\epraccur.csv") %>%
+    filter(StatusCode == "A", PrescribingSetting == 4) %>%
+    select(Name, OrganisationCode, Postcode)
+
+
 #test calculations
 #test_that("getODS - produces correct output when correct arguments specified",{
 #
