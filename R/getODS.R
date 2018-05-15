@@ -1,6 +1,6 @@
 #' getODS
 #'
-#' Extracts ODS data for multiple organisations from the NHS Digitial ODS ORD API into a data frame.
+#' Extracts summary ODS data for multiple organisations from the NHS Digitial ODS ORD API into a data frame.
 #'
 #' @param Name     Search organisations based on name. Organisations that contain the argument string in their name are returned.;
 #'                 quoted string; default "All" applies no filter
