@@ -1,10 +1,14 @@
 context("test_getODS")
 
 
-# replace this section by including test data with package later
+# extract practice codes, names and parent CCG codes from epraccur for records that are GP practices and were active on 2018-01-01
+# move this section to package folder for test data later
+
 epraccur <- read.csv("C:\\Users\\Georgina.Anderson\\Documents\\R\\Projects\\odsR\\tests\\testthat\\epraccur.csv") %>%
-    filter(StatusCode == "A", PrescribingSetting == 4) %>%
-    select(Name, OrganisationCode, Postcode)
+    filter(PrescribingSetting == 4 &
+           OpenDate <= "20180101" &
+           (is.na(CloseDate)|CloseDate > "20180101")) %>%
+    select(OrganisationCode, Name, Commissioner, OpenDate, CloseDate, StatusCode)
 
 
 #test calculations
