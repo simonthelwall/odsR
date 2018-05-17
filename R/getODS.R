@@ -108,10 +108,6 @@ getODS <- function(Name             = "All",
       myQuery <- paste0(myQuery,"&PrimaryRoleId=", PrimaryRoleId)
     }
 
-    if (!NonPrimaryRoleId=="All") {
-      myQuery <- paste0(myQuery,"&NonPrimaryRoleId=", NonPrimaryRoleId)
-    }
-
     if (!OrgRecordClass=="All") {
       myQuery <- paste0(myQuery,"&OrgRecordClass=", OrgRecordClass)
     }
@@ -123,8 +119,11 @@ getODS <- function(Name             = "All",
   cnx     <- url(c(myQuery),"rb")
 
 # submit API request
-  getODS <- fromJSON(cnx) %>%
-    rbind_pages()
+  getODS <- fromJSON(cnx)$Organisations
+#  subsetting from returned list works unless only 1 result in List then List of length 0 returned
+
+
+  #rbind_pages()
 
 # close URL connection
   close(cnx)

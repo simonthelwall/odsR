@@ -5,8 +5,9 @@
 #' @param ODSCode The organisation to return details for; quoted string; no default
 #' @inheritparams getODS
 #'
-#' @return returns a data.frame containing the following details for the organisation:
-#'  EDIT       Name, Organisation ID, Status, Organisation Record Class, Postcode, Last Change Date, Primary Role ID,
+#' @return returns a data.frame containing the full details for the organisation including:
+#'         Name, Date Start, Status, Last Change Date, Organisation Record Class,
+#'         Address, Postcode, Primary Role ID, Non-primary Role ID,
 #'         Non primary Role ID, Primary Role Description, Organisation Link (API endpoint URL for full organisation record)
 #'
 #' @section Notes: View the NHS Digital ODS API Implementation Guide at
@@ -35,17 +36,17 @@ getODSfull <- function(ODSCode,Format="json") {
     } else if (!(tolower(Format) %in% c("json", "xml","text/json","text/xml","application/json","application/xml"))) {
           stop("ERROR: Format is invalid - valid values: json, xml, text/json, text/xml, application/json, application/xml")
     }
-  
-  
+
+
     myQueryfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=",Format,sep="")
-    cnxfull     <- url(c(myQueryfull),"rb")  
-    
+    cnxfull     <- url(c(myQueryfull),"rb")
+
     getODSfull <- fromJSON(cnxfull)  %>%
       unlist() %>%
       as.matrix()
-    
-   close(cnxfull) 
-      
+
+   close(cnxfull)
+
   return(getODSfull)
 }
 
