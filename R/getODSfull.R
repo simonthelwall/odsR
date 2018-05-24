@@ -5,7 +5,7 @@
 #' @param ODSCode The organisation to return details for; quoted string; no default
 #' @inheritparams getODS
 #'
-#' @return returns a data.frame containing the full details for the organisation including:
+#' @return returns a list of length 1 containing the full details for the Organisation including:
 #'         Name, Date Start, Status, Last Change Date, Organisation Record Class,
 #'         Address, Postcode, Primary Role ID, Non-primary Role ID,
 #'         Non primary Role ID, Primary Role Description, Organisation Link (API endpoint URL for full organisation record)
@@ -41,16 +41,10 @@ getODSfull <- function(ODSCode,Format="json") {
     myQueryfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=",Format,sep="")
     cnxfull     <- url(c(myQueryfull),"rb")
 
-    getODSfull <- fromJSON(cnxfull)  %>%
-      unlist() %>%
-      as.matrix()
+    getODSfull <- fromJSON(cnxfull)
 
    close(cnxfull)
 
   return(getODSfull)
 }
-
-
-
-
 

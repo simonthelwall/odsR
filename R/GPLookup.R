@@ -3,56 +3,76 @@
 
 # Work In Progress - TO DO
 # **********  NEED TO BIND PAGES so working with full GP list *************
-# Need to account for records with operational and legal start and end dates
-# Need to account for eecords with only one parent (colname = extension not extension 1)
+# need to account for organisations with >1 start and end date record for the main practice ??
 
 
 
-# retrieve all GP practices - **********  NEED TO BIND PAGES *************
+# retrieve all GP practices
 allgps <- getODS(PrimaryRoleId="RO177",NonPrimaryRoleId="RO76")
 
 # Create empty Lookup dataframe
 lkup <- setNames(data.frame(matrix(ncol = 4, nrow = 0)),
                  c("GPPRAC15CD","GPPRAC15NM","CCG15CD", "CCG15NM"))
 
-# loop through each GP Practice record - error at record 38 - parent field just extension not extension1
+# loop through each GP Practice record
 
-for (i in (1:37)) {  #nrow(allgps))) {
+for (i in (1:nrow(allgps))) {
 
-    live <- 0
+    OrgExists <- NA
+    MyDate <- "2015-12-31"
+    getGPPrac <- getODSfull(allgps[i,2])
 
-    thisgp <- t(getODSfull(allgps[i,2]))
+    # get Organisation dates
+    OrgDates <- dplyr::bind_rows(getGPPrac$Organisation$Date)
 
-    if("Organisation.Date.Start" %in% colnames(thisgp)) {
+    # check if Org existed on specified date
+    if ("End" %in% colnames(OrgDates)) {
+        OrgExists <- OrgDates %>%
+            filter(Type == "Operational" & Start <= MyDate & (is.na(End) | End > MyDate))
+    } else {
+        OrgExists <- OrgDates %>%
+            filter(Type == "Operational" & Start <= MyDate)
+    }
 
-        if ("Organisation.Date.End" %in% colnames(thisgp)) {
-           lkup1  <- data.frame(matrix(thisgp,nrow=1, dimnames=dimnames(thisgp)),stringsAsFactors=FALSE) %>%
-                       select(Organisation.OrgId.extension,
-                              Organisation.Name,
-                              Organisation.Rels.Rel.Target.OrgId.extension1,
-                              Organisation.Date.Start,
-                              Organisation.Date.End)
-           if (lkup1$Organisation.Date.Start <= "2015-12-31" &
-               (is.na(lkup1$Organisation.Date.End) | lkup1$Organisation.Date.End > "2015-12-31")) {
-               live <- 1
-           }
+    # continue if organisation existed at specified date
+    if (nrow(OrgExists) ==1) {
 
+        # find parent dates
+        RelDates <- dplyr::bind_rows(getGPPrac$Organisation$Rels$Rel$Date)
+
+        # check which parent existed on specified date
+        if ("End" %in% colnames(RelDates)) {
+            RelExists <- which(RelDates$Type == "Operational" &
+                               RelDates$Start <= MyDate &
+                               (is.na(RelDates$End) | RelDates$End > MyDate))
         } else {
-           lkup1  <- data.frame(matrix(thisgp,nrow=1, dimnames=dimnames(thisgp)),stringsAsFactors=FALSE) %>%
-                        select(Organisation.OrgId.extension,
-                          Organisation.Name,
-                           Organisation.Rels.Rel.Target.OrgId.extension1,
-                          Organisation.Date.Start)
-           if (lkup1$Organisation.Date.Start <= "2015-12-31") {
-               live <- 1
-           }
+            RelExists <- which(RelDates$Type == "Operational" &
+                               RelDates$Start <= MyDate)
         }
+
+        # return parent code for specified date
+        CCG15CD <- getGPPrac$Organisation$Rels$Rel$Target$OrgId$extension[RelExists]
+
+        # obtain CCGName for CCGCode
+        CCG15NM <- getODSfull(CCG15CD)$Organisation$Name
+
+
+        # build lookups record
+        addrow <- data.frame(GPPRAC15CD = getGPPrac$Organisation$OrgId$extension,
+                     GPPRAC15NM = getGPPrac$Organisation$Name,
+                     CCG15CD = CCG15CD,
+                     CCG15NM = CCG15NM)
+
+    lkup <- bind_rows(lkup,addrow)
+
     }
-    # append live organisation data to lkup dataframe
-    if (live == 1) {
-        ccgname    <- getODSfull(lkup1[3])[1]
-        names(lkup1) <- c("GPPRAC15CD","GPPRAC15NM","CCG15CD", "CCG15NM")
-        lkup1      <- data.frame(lkup1[1:3],CCG15Name = ccgname)
-        lkup       <- rbind(lkup,lkup1)
-    }
+
 }
+
+
+
+
+
+
+
+

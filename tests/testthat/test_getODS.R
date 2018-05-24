@@ -6,10 +6,19 @@ context("test_getODS")
 
 epraccur <- read.csv("C:\\Users\\Georgina.Anderson\\Documents\\R\\Projects\\odsR\\tests\\testthat\\epraccur.csv") %>%
     filter(PrescribingSetting == 4 &
-           OpenDate <= "20180101" &
-           (is.na(CloseDate)|CloseDate > "20180101")) %>%
+           OpenDate <= "20151231" &
+           (is.na(CloseDate)|CloseDate > "20151231")) %>%
     select(OrganisationCode, Name, Commissioner, OpenDate, CloseDate, StatusCode)
 
+
+epraccur16 <- read.csv("C:\\Users\\Georgina.Anderson\\Documents\\R\\Projects\\odsR\\tests\\testthat\\epraccur.csv") %>%
+    filter(PrescribingSetting == 4 &
+               OpenDate <= "20151231" &
+               (is.na(CloseDate)|CloseDate > "20151231")) %>%
+    filter(OrganisationCode %in% c("Y04082", "A85609", "N84035", "W91050", "W00074",
+                                   "E83027", "K84016", "P87652", "P87620", "P87004",
+                                   "Y00364", "K81645", "K84049", "K84080", "P87039", "W92616")) %>%
+    select(OrganisationCode, Name, Commissioner, OpenDate, CloseDate, StatusCode)
 
 #test calculations
 #test_that("getODS - produces correct output when correct arguments specified",{
