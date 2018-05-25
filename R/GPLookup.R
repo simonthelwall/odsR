@@ -22,51 +22,65 @@ for (i in (1:nrow(allgps))) {
     MyDate <- "2015-12-31"
     getGPPrac <- getODSfull(allgps[i,2])
 
-    # get Organisation dates
-    OrgDates <- dplyr::bind_rows(getGPPrac$Organisation$Date)
+    # continue for English GP Practices
+    if(getGPPrac$Organisation$GeoLoc$Location$Country == "ENGLAND") {
 
-    # check if Org existed on specified date
-    if ("End" %in% colnames(OrgDates)) {
-        OrgExists <- OrgDates %>%
-            filter(Type == "Operational" & Start <= MyDate & (is.na(End) | End > MyDate))
-    } else {
-        OrgExists <- OrgDates %>%
-            filter(Type == "Operational" & Start <= MyDate)
-    }
+        # get Organisation dates
+        OrgDates   <- dplyr::bind_rows(getGPPrac$Organisation$Date) %>%
+            filter(Type=="Operational")
 
-    # continue if organisation existed at specified date
-    if (nrow(OrgExists) ==1) {
 
-        # find parent dates
-        RelDates <- dplyr::bind_rows(getGPPrac$Organisation$Rels$Rel$Date)
+        # check if Org existed on specified date
 
-        # check which parent existed on specified date
-        if ("End" %in% colnames(RelDates)) {
-            RelExists <- which(RelDates$Type == "Operational" &
-                               RelDates$Start <= MyDate &
-                               (is.na(RelDates$End) | RelDates$End > MyDate))
+        if ("End" %in% colnames(OrgDates)) {
+            OrgExists <- OrgDates %>%
+                filter(Start <= MyDate & (is.na(End) | End > MyDate))
         } else {
-            RelExists <- which(RelDates$Type == "Operational" &
-                               RelDates$Start <= MyDate)
+            OrgExists <- OrgDates %>%
+                filter(Start <= MyDate)
         }
 
-        # return parent code for specified date
-        CCG15CD <- getGPPrac$Organisation$Rels$Rel$Target$OrgId$extension[RelExists]
+        # continue if organisation existed at specified date
+        if (nrow(OrgExists) ==1) {
 
-        # obtain CCGName for CCGCode
-        CCG15NM <- getODSfull(CCG15CD)$Organisation$Name
+            # find parent dates
+            RelDates <- dplyr::bind_rows(getGPPrac$Organisation$Rels$Rel$Date) %>%
+                filter(Type == "Operational")
+
+            # append Roles and OrgIds to RelDates
+            RelRoles <- dplyr::bind_rows(getGPPrac$Organisation$Rels$Rel$Target$PrimaryRoleId)[1]
+            RelOrgs  <- dplyr::bind_rows(getGPPrac$Organisation$Rels$Rel$Target$OrgId)[3]
+            Rels     <- dplyr::bind_cols(RelDates,RelOrgs,RelRoles)
+
+            # check which parent has an operational relationship, is a CCG and existed on specified date
+            if ("End" %in% colnames(Rels)) {
+                CCG15CD <- filter(Rels, Rels$id    == "RO98" &
+                                        Rels$Start <= MyDate &
+                                        (is.na(Rels$End) | Rels$End > MyDate)) %>%
+                        select(extension) %>%
+                        rename(CCG15CD = extension)
+            } else {
+                CCG15CD <- filter(Rels, Rels$id    == "RO98" &
+                                        Rels$Start <= MyDate) %>%
+                        select(extension) %>%
+                    rename(CCG15CD = extension)
+            }
 
 
-        # build lookups record
-        addrow <- data.frame(GPPRAC15CD = getGPPrac$Organisation$OrgId$extension,
-                     GPPRAC15NM = getGPPrac$Organisation$Name,
-                     CCG15CD = CCG15CD,
-                     CCG15NM = CCG15NM)
+            # obtain CCGName for CCGCode
+            CCG15NM <- getODSfull(CCG15CD)$Organisation$Name
 
-    lkup <- bind_rows(lkup,addrow)
 
+            # build lookups record
+            addrow <- data.frame(GPPRAC15CD = getGPPrac$Organisation$OrgId$extension,
+                                GPPRAC15NM = getGPPrac$Organisation$Name,
+                                CCG15CD = CCG15CD,
+                                CCG15NM = CCG15NM, stringsAsFactors=FALSE)
+
+        lkup <- bind_rows(lkup,addrow)
+
+        }
     }
-
 }
 
 
