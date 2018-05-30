@@ -11,15 +11,15 @@
 allgps <- getODS(PrimaryRoleId="RO177",NonPrimaryRoleId="RO76")
 
 # Create empty Lookup dataframe
-lkup <- setNames(data.frame(matrix(ncol = 4, nrow = 0)),
-                 c("GPPRAC15CD","GPPRAC15NM","CCG15CD", "CCG15NM"))
+lkup <- setNames(data.frame(matrix(ncol = 5, nrow = 0)),
+                 c("GPPracCD","GPPracNM","CCGCD", "CCGNM", "Date"))
 
 # loop through each GP Practice record
 
 for (i in (1:nrow(allgps))) {
 
     OrgExists <- NA
-    MyDate <- "2015-12-31"
+    MyDate <- "2018-04-01"
     getGPPrac <- getODSfull(allgps[i,2])
 
     # continue for English GP Practices
@@ -54,28 +54,29 @@ for (i in (1:nrow(allgps))) {
 
             # check which parent has an operational relationship, is a CCG and existed on specified date
             if ("End" %in% colnames(Rels)) {
-                CCG15CD <- filter(Rels, Rels$id    == "RO98" &
+                CCGCD <- filter(Rels, Rels$id    == "RO98" &
                                         Rels$Start <= MyDate &
                                         (is.na(Rels$End) | Rels$End > MyDate)) %>%
                         select(extension) %>%
-                        rename(CCG15CD = extension)
+                        rename(CCGCD = extension)
             } else {
-                CCG15CD <- filter(Rels, Rels$id    == "RO98" &
-                                        Rels$Start <= MyDate) %>%
+                CCGCD <- filter(Rels, Rels$id    == "RO98" &
+                                      Rels$Start <= MyDate) %>%
                         select(extension) %>%
-                    rename(CCG15CD = extension)
+                    rename(CCGCD = extension)
             }
 
 
             # obtain CCGName for CCGCode
-            CCG15NM <- getODSfull(CCG15CD)$Organisation$Name
+            CCGNM <- getODSfull(CCGCD)$Organisation$Name
 
 
             # build lookups record
-            addrow <- data.frame(GPPRAC15CD = getGPPrac$Organisation$OrgId$extension,
-                                GPPRAC15NM = getGPPrac$Organisation$Name,
-                                CCG15CD = CCG15CD,
-                                CCG15NM = CCG15NM, stringsAsFactors=FALSE)
+            addrow <- data.frame(GPPracCD = getGPPrac$Organisation$OrgId$extension,
+                                 GPPracNM = getGPPrac$Organisation$Name,
+                                 CCGCD    = CCGCD,
+                                 CCGNM    = CCGNM, stringsAsFactors=FALSE,
+                                 Date     = MyDate)
 
         lkup <- bind_rows(lkup,addrow)
 
