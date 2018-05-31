@@ -1,10 +1,4 @@
 
-# retrieve org IDs and API URLs for all Active GP Practices (only retrives first 1000)
-
-# Work In Progress - TO DO
-# **********  NEED TO BIND PAGES so working with full GP list *************
-# need to account for organisations with >1 start and end date record for the main practice ??
-
 
 
 # retrieve all GP practices

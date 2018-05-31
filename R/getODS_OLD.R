@@ -45,8 +45,6 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
-
-
 # create function to allow user to specify parameters to input to ODS API call
 getODS <- function(Name             = "All",
                     PostCode         = "All",
@@ -54,87 +52,86 @@ getODS <- function(Name             = "All",
                     Status           = "All",
                     PrimaryRoleId    = "All",
                     NonPrimaryRoleId = "All",
-                    OrgRecordClass   = "All") {
-
+                    OrgRecordClass   = "All",
+                    Limit            = 1000,
+                    Offset           = 1,
+                    Format           = "json") {
  # error checks
     if (Name           == "All" & PostCode         == "All" &
         LastChangeDate == "All" & Status           == "All" &
         PrimaryRoleId  == "All" & NonPrimaryRoleId == "All" &
         OrgRecordClass == "All") {
           stop("ERROR: at least one organisational parameter must be specified")
-    } else if (!(is.date(LastChangeDate))) {
-          stop("ERROR: LastChangeDate is not a valid date")
     } else if (!(tolower(Status) %in% c("all", "active","inactive"))) {
           stop("ERROR: Status is invalid - valid values are All (default), Active, Inactive")
-    } else if (!(PrimaryRoleId == "All" |
-                 tolower(left(PrimaryRoleId,2)) == "ro" |
-                 as.integer(substr(PrimaryRoleId,3,3)))) {
-          stop("ERROR: PrimaryRoleId is invalid - valid values begin with RO followed by a number, or specify All")
-    } else if (!(NonPrimaryRoleId == "All" |
-                 tolower(left(NonPrimaryRoleId,2)) == "ro" |
-                 as.integer(substr(NonPrimaryRoleId,3,3)))) {
-          stop("ERROR: NonPrimaryRoleId is invalid - valid values begin with RO followed by a number, or specify All")
+    } else if (!(tolower(PrimaryRoleId) %in% c("all", "ro98","ro101","ro177"))) {
+          stop("ERROR: PrimaryRoleId is invalid - valid values are All (default), RO98 (CCG), RO101 (Care Home Site), RO177 (Prescribing Cost Centre)")
+    } else if (!(tolower(NonPrimaryRoleId) %in% c("all", "ro76","ro218"))) {
+          stop("ERROR: NonPrimaryRoleId is invalid - valid values are All (default), RO76 (GP Practice Prescribing Cost Centre), RO218 (Commissioning Hub)")
     } else if (!(tolower(OrgRecordClass) %in% c("all", "rc1","rc2"))) {
           stop("ERROR: OrgRecordClass is invalid - valid values are All (default), RC1 (Health and Social Care Organisation), RC2 (Health and Social Care Organisation Site)")
+    } else if (!(tolower(Format) %in% c("json", "xml","text/json","text/xml","application/json","application/xml"))) {
+          stop("ERROR: Format is invalid - valid values are json, xml, text/json, text/xml, application/json, application/xml")
+    } else if (!(is.numeric(Limit))) {
+        stop("ERROR: Limit must be a numeric integer")
+    } else if (!(Limit%%1==0)){
+        stop("ERROR: Limit must be a numeric integer")
+    } else if (Limit > 1000) {
+        stop("ERROR: Limit must be between 1 and 1000")
+    } else if (!(is.numeric(Offset))) {
+        stop("ERROR: Offset must be a numeric integer")
+    } else if (!(Offset%%1==0)) {
+        stop("ERROR: Offset must be a numeric integer")
     }
 
+
 # define organisation search endpoint URL
-    url <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?"
+    myQuery <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?"
 
 # complete URL using specified parameters
     if (!Name=="All") {
-      url <- paste0(url,"&Name=", Name)
+      myQuery <- paste0(myQuery,"&Name=", Name)
     }
 
     if (!PostCode=="All") {
-      url <- paste0(url,"&PostCode=", PostCode)
+      myQuery <- paste0(myQuery,"&PostCode=", PostCode)
     }
 
     if (!LastChangeDate=="All") {
-      url <- paste0(url,"&LastChangeDate=", LastChangeDate)
+      myQuery <- paste0(myQuery,"&LastChangeDate=", LastChangeDate)
     }
 
     if (!Status=="All") {
-      url <- paste0(url,"&Status=", Status)
+      myQuery <- paste0(myQuery,"&Status=", Status)
     }
 
     if (!PrimaryRoleId=="All") {
-      url <- paste0(url,"&PrimaryRoleId=", PrimaryRoleId)
+      myQuery <- paste0(myQuery,"&PrimaryRoleId=", PrimaryRoleId)
     }
 
     if (!OrgRecordClass=="All") {
-      url <- paste0(url,"&OrgRecordClass=", OrgRecordClass)
+      myQuery <- paste0(myQuery,"&OrgRecordClass=", OrgRecordClass)
     }
 
-    # append offset, limit and format to URL
-    url <- paste0(url,"&_format=application/json&Limit=1000")
+# append offset, limit and format to URL
+  myQuery <- paste0(myQuery,"&Limit=", Limit,"&Offset=",Offset,"&_format=",Format)
 
-  # better to set config elsewhere - not within function ??
-  set_config(config(ssl_verifypeer = 0L))
+# define read only URL connection
+  cnx     <- url(c(myQuery),"rb")
 
-  # Get API response
-  httpResponse <- GET(url, accept_json())
+# submit API request
+  getODS <- fromJSON(cnx)$Organisations
+#  subsetting from returned list works unless only 1 result in List then List of length 0 returned
 
-  # identify pages returned - 1000 record per page (floor as will loop from 0)
-  npages <- floor(as.double(httpResponse$headers$`x-total-count`)/1000)
 
-  # Loop through responses to retrieve all data
+  #rbind_pages()
 
-  pages <- list()
-
-  for (i in 0:npages) {
-        if (i == 0) {
-            urlpages  <- paste0(url,"&Offset=1",sep="")
-        } else
-            urlpages  <- paste0(url,"&Offset=",i*1000,sep="")
-        httpResponse1 <- GET(url, accept_json())
-        results = fromJSON(content(httpResponse1, "text", encoding="UTF-8"))
-        pages[[i+1]] <- results$Organisations
-  }
-
-  getODS <- rbind_pages(pages)
+# close URL connection
+  close(cnx)
 
   return(getODS)
 }
+
+
 
 

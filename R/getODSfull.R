@@ -20,6 +20,7 @@
 #'
 #' @import dplyr
 #' @import jsonlite
+#' @import httr
 #'
 #' @export
 #'
@@ -28,7 +29,7 @@
 
 
 # create function to allow user to specify parameters to input to ODS API call
-getODSfull <- function(ODSCode,Format="json") {
+getODSfull <- function(ODSCode,Format="application/json") {
 
    # error checks
     if (is.null(ODSCode)) {
@@ -37,13 +38,13 @@ getODSfull <- function(ODSCode,Format="json") {
           stop("ERROR: Format is invalid - valid values: json, xml, text/json, text/xml, application/json, application/xml")
     }
 
+    urlfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=",Format,sep="")
 
-    myQueryfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=",Format,sep="")
-    cnxfull     <- url(c(myQueryfull),"rb")
+    # better to set config elsewhere - not within function ??
+    set_config(config(ssl_verifypeer = 0L))
 
-    getODSfull <- fromJSON(cnxfull)
-
-   close(cnxfull)
+    httpResponse <- GET(urlfull, accept_json())
+    getODSfull <- fromJSON(content(httpResponse, "text", encoding="UTF-8"))
 
   return(getODSfull)
 }
