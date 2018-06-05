@@ -62,16 +62,16 @@ getODS <- function(Name             = "All",
         PrimaryRoleId  == "All" & NonPrimaryRoleId == "All" &
         OrgRecordClass == "All") {
           stop("ERROR: at least one organisational parameter must be specified")
-    } else if (!(is.date(LastChangeDate))) {
-          stop("ERROR: LastChangeDate is not a valid date")
+ #   } else if (!(is.date(LastChangeDate))) {
+ #         stop("ERROR: LastChangeDate is not a valid date")
     } else if (!(tolower(Status) %in% c("all", "active","inactive"))) {
           stop("ERROR: Status is invalid - valid values are All (default), Active, Inactive")
     } else if (!(PrimaryRoleId == "All" |
-                 tolower(left(PrimaryRoleId,2)) == "ro" |
+                 tolower(substr(PrimaryRoleId,1,2)) == "ro" |
                  as.integer(substr(PrimaryRoleId,3,3)))) {
           stop("ERROR: PrimaryRoleId is invalid - valid values begin with RO followed by a number, or specify All")
     } else if (!(NonPrimaryRoleId == "All" |
-                 tolower(left(NonPrimaryRoleId,2)) == "ro" |
+                 tolower(substr(NonPrimaryRoleId,1,2)) == "ro" |
                  as.integer(substr(NonPrimaryRoleId,3,3)))) {
           stop("ERROR: NonPrimaryRoleId is invalid - valid values begin with RO followed by a number, or specify All")
     } else if (!(tolower(OrgRecordClass) %in% c("all", "rc1","rc2"))) {
@@ -127,7 +127,7 @@ getODS <- function(Name             = "All",
             urlpages  <- paste0(url,"&Offset=1",sep="")
         } else
             urlpages  <- paste0(url,"&Offset=",i*1000,sep="")
-        httpResponse1 <- GET(url, accept_json())
+        httpResponse1 <- GET(urlpages, accept_json())
         results = fromJSON(content(httpResponse1, "text", encoding="UTF-8"))
         pages[[i+1]] <- results$Organisations
   }
