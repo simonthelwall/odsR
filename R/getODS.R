@@ -17,13 +17,7 @@
 #'                 quoted string; default "All" applies no filter
 #' @param OrgRecordClass Search for oganisations based on their record class. Arguments can be "RC1" or "RC2".;
 #'                 quoted string; default "All" applies no filter
-#' @param Limit    Limit the number of organisations returned per response. The argument can range from 1-1000.
-#'                 numeric integer; default 1000
-#' @param Offset   Offset the start point of the result set, by the value specified. The argument can range from 1-****.
-#'                 numeric integer; default 1
-#' @param Format   Specify the output format.  Arguments can be "xml", "json", "text/json", "text/xml",
-#'                 "application/json" and "application/xml". quoted string, default "json"
-#'#'
+#'
 #' @return returns a data.frame containing the following details for the organisations that meet the filter specifications:
 #'         Name, Organisation ID, Status, Organisation Record Class, Postcode, Last Change Date, Primary Role ID,
 #'         Non primary Role ID, Primary Role Description, Organisation Link (API endpoint URL for full organisation record)
@@ -102,6 +96,10 @@ getODS <- function(Name             = "All",
       url <- paste0(url,"&PrimaryRoleId=", PrimaryRoleId)
     }
 
+    if (!NonPrimaryRoleId=="All") {
+        url <- paste0(url,"&NonPrimaryRoleId=", NonPrimaryRoleId)
+    }
+
     if (!OrgRecordClass=="All") {
       url <- paste0(url,"&OrgRecordClass=", OrgRecordClass)
     }
@@ -114,6 +112,7 @@ getODS <- function(Name             = "All",
 
   # Get API response
   httpResponse <- GET(url, accept_json())
+  #httpResponse <- GET(url,use_proxy(ie_get_proxy_for_url(.), username = "", password = "", auth = "ntlm"))
 
   # identify pages returned - 1000 record per page (floor as will loop from 0)
   npages <- floor(as.double(httpResponse$headers$`x-total-count`)/1000)
