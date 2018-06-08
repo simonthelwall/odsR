@@ -31,15 +31,47 @@
 # FromDate
 # Slice values and loops
 
+PrimaryRole        = "RO177"
+NonPrimaryRole     = "RO76"
+ParentPrimaryRoles = c("RO98")
+FromDate           = "2013-04-01"
+slicerows <- as.numeric(2001-3000)
 
+
+OrgLkp1 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(1:1000))
+OrgLkp2 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(1001:2000))
+OrgLkp3 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(2001:3000))
+OrgLkp4 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(3001:4000))
+OrgLkp5 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(4001:5000))
+OrgLkp6 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(5001:6000))
+OrgLkp7 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(6001:7000))
+OrgLkp8 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(7001:8000))
+OrgLkp9 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(8001:9000))
+
+OrgLkp <- bind_rows(OrgLkp1,OrgLkp2) %>%
+    bind_rows(OrgLkp3) %>%
+    bind_rows(OrgLkp4) %>%
+    bind_rows(OrgLkp5) %>%
+    bind_rows(OrgLkp6) %>%
+    bind_rows(OrgLkp7) %>%
+    bind_rows(OrgLkp8) %>%
+    bind_rows(OrgLkp9)
+
+
+
+#allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole)
+
+
+# below working but doesn't add parent names - do as separate function to avoid timeout errors??
 
 # create function to generate GP Practice to CCG Lookup data.frame
-GPLookup <- function() {
+OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDate) {  #}, Slicerows) {
 
-    # retrieve all GP practices
-    allorgs <- getODS(PrimaryRoleId="RO177",NonPrimaryRoleId="RO76")
+    # retrieve all GP practices - moved outside function to see if helps timeout issue
+    allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole)
 
-allorgs <- slice(allorgs,1000:2000)
+# function works on 1000 records - use slice below.  memory errors if process full GP dataset in one go.
+# allorgs <- slice(allorgs,slicerows)
 
     # Create empty Lookup dataframe
     lkup <- setNames(data.frame(matrix(ncol = 8, nrow = 0)),
@@ -47,7 +79,7 @@ allorgs <- slice(allorgs,1000:2000)
 
     # loop through each GP Practice record
 
-    for (i in (1:200)) {        #nrow(allorgs))) {
+    for (i in (1:nrow(allorgs))) {
 
         OrgExists <- NA
         getOrg <- getODSfull(allorgs[i,2])
@@ -64,11 +96,11 @@ allorgs <- slice(allorgs,1000:2000)
                 OrgDates$End <- NA
             }
 
-            # keep practices in operation after 01/04/2013 when CCGs introduced
+            # keep practices in operation after specified FromDate
             addOrg <- 0
             if(!("End" %in% colnames(OrgDates))) {
                 addOrg <- 1
-            } else if (OrgDates$End >= "2013-04-01" | is.na(OrgDates$End)) {
+            } else if (OrgDates$End >= FromDate | is.na(OrgDates$End)) {
                 addOrg <- 1
             }
 
@@ -99,7 +131,7 @@ allorgs <- slice(allorgs,1000:2000)
                     RelRoles <- dplyr::bind_rows(getOrg$Organisation$Rels$Rel$Target$PrimaryRoleId)[1]
                     RelOrgs  <- dplyr::bind_rows(getOrg$Organisation$Rels$Rel$Target$OrgId)[3]
                     Rels     <- dplyr::bind_cols(RelDates,RelOrgs,RelRoles) %>%
-                        filter(id == "RO98")
+                        filter(id %in% ParentPrimaryRoles)
 
 
                     # if Rels exists but none are correct role (eg P85619)
@@ -122,7 +154,7 @@ allorgs <- slice(allorgs,1000:2000)
 
                             # find CCG Name for CCG Code
                             ParentCD <- select(Rels,extension)[j,1]
-                            ParentNM <- getODSfull(ParentCD)$Organisation$Name
+                      #      ParentNM <- getODSfull(ParentCD)$Organisation$Name    # see if getting parent name separately helps with timeout
 
                             # build lookups record
                             if (!("End" %in% colnames(Rels))) {
@@ -134,7 +166,7 @@ allorgs <- slice(allorgs,1000:2000)
                                                  OrgStart    = OrgDates$Start,
                                                  OrgEnd      = OrgDates$End,
                                                  ParentCD    = Rels$extension[j],
-                                                 ParentNM    = ParentNM, stringsAsFactors=FALSE,
+                                                 ParentNM    = NA, # ParentNM, stringsAsFactors=FALSE,
                                                  RelStart    = Rels$Start[j],
                                                  RelEnd      = Rels$End[j])
 
