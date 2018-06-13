@@ -1,9 +1,9 @@
-#' GPLookup
+#' OrgParentLkp
 #'
-#' Generates a GP Practice to CCG Lookup Data Frame from the NHS Digitial ODS ORD API.
+#' Generates an Organisation to Parent Lookup Data Frame from the NHS Digitial ODS ORD API.
 #'
-#' @return returns a GP Practice to CCG Lookup data.frame including the start and end dates of each GP Practice >> CCG relationship.
-#' There are no arguments to this function - it is a wrapper for the getODS function that will generate the lookup based on the latest data
+#' @return returns a data.frame of  Organisation code, name, start date and end date plus the parent code and name
+#' and associated start and end dates for the organisation >> parent relationship.
 #'
 #'
 #' @section Notes: View the NHS Digital ODS API Implementation Guide at
@@ -11,8 +11,11 @@
 #'          View the NHS Digital ODS API Suite at \url{https://directory.spineservices.nhs.uk/ODSAPISuite}
 #'
 #' @examples
-#' # return full Organisation data for RRF12
-#' GPLookup()
+#' # return GP Practice to CCG Lookup to include all organisations effective on or after 01-04-2013
+#' OrgParentLkp("RO177","RO76","RO98","2013-04-01")
+#'
+#' # return GP practice to CCG/PCT Lookup to include all organisations effective on or after 01-04-2012
+#' OrgParentLkp("RO177","RO76",c("RO98","RO179"),"2012-04-01")
 #'
 #' @import dplyr
 #' @import jsonlite
@@ -23,59 +26,29 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
+# PrimaryRole        = "RO177"
+# NonPrimaryRole     = "RO76"
+# ParentPrimaryRoles = c("RO98")
+# FromDate           = "2013-04-01"
+# slicerows <- as.numeric(2001-3000)
 
-# parameters to add
-# PrimaryRole Id List
-# Non PrimaryRoleId List
-# Parent Roles
-# FromDate
-# Slice values and loops
+# library(dplyr)
+# library(httr)
+# library(jsonlite)
 
-PrimaryRole        = "RO177"
-NonPrimaryRole     = "RO76"
-ParentPrimaryRoles = c("RO98")
-FromDate           = "2013-04-01"
-slicerows <- as.numeric(2001-3000)
-
-
-OrgLkp1 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(1:1000))
-OrgLkp2 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(1001:2000))
-OrgLkp3 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(2001:3000))
-OrgLkp4 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(3001:4000))
-OrgLkp5 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(4001:5000))
-OrgLkp6 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(5001:6000))
-OrgLkp7 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(6001:7000))
-OrgLkp8 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(7001:8000))
-OrgLkp9 <- OrgParentLkp(PrimaryRole,NonPrimaryRole,ParentPrimaryRoles,FromDate,Slicerows=as.vector(8001:9000))
-
-OrgLkp <- bind_rows(OrgLkp1,OrgLkp2) %>%
-    bind_rows(OrgLkp3) %>%
-    bind_rows(OrgLkp4) %>%
-    bind_rows(OrgLkp5) %>%
-    bind_rows(OrgLkp6) %>%
-    bind_rows(OrgLkp7) %>%
-    bind_rows(OrgLkp8) %>%
-    bind_rows(OrgLkp9)
-
-
-
-#allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole)
-
-
-# below working but doesn't add parent names - do as separate function to avoid timeout errors??
+# Output <- OrgParentLkp("RO177","RO76","RO98","2014-04-01")
 
 # create function to generate GP Practice to CCG Lookup data.frame
-OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDate) {  #}, Slicerows) {
+OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDate) {
 
     # retrieve all GP practices - moved outside function to see if helps timeout issue
     allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole)
 
-# function works on 1000 records - use slice below.  memory errors if process full GP dataset in one go.
-# allorgs <- slice(allorgs,slicerows)
-
     # Create empty Lookup dataframe
-    lkup <- setNames(data.frame(matrix(ncol = 8, nrow = 0)),
-                     c("OrgCD","OrgNM","OrgStart","OrgEnd", "ParentCD", "ParentNM", "RelStart", "RelEnd"))
+ #   lkup <- setNames(data.frame(matrix(ncol = 8, nrow = 0)),
+ #                    c("OrgCD","OrgNM","OrgStart","OrgEnd", "ParentCD", "ParentNM", "RelStart", "RelEnd"))
+    lkup <- setNames(data.frame(matrix(ncol = 7, nrow = 0)),
+                     c("OrgCD","OrgNM","OrgStart","OrgEnd", "ParentCD", "RelStart", "RelEnd"))
 
     # loop through each GP Practice record
 
@@ -96,13 +69,21 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
                 OrgDates$End <- NA
             }
 
-            # keep practices in operation after specified FromDate
-            addOrg <- 0
-            if(!("End" %in% colnames(OrgDates))) {
+            # keep only practices in operation after specified FromDate
+            if(OrgDates$End >= FromDate | is.na(OrgDates$End)) {
                 addOrg <- 1
-            } else if (OrgDates$End >= FromDate | is.na(OrgDates$End)) {
-                addOrg <- 1
+            } else {
+                addOrg <- 0
             }
+
+
+
+            #addOrg <- 0
+            #if(!("End" %in% colnames(OrgDates))) {
+            #    addOrg <- 1
+            #} else if (OrgDates$End >= FromDate | is.na(OrgDates$End)) {
+            #    addOrg <- 1
+            #}
 
             if (addOrg == 1) {
 
@@ -116,9 +97,9 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
                                         OrgStart = OrgDates$Start,
                                         OrgEnd   = OrgDates$End,
                                         ParentCD    = NA,
-                                        ParentNM    = NA,
+                                       # ParentNM    = NA,
                                         RelStart    = NA,
-                                        RelEnd      = NA)
+                                        RelEnd      = NA, stringsAsFactors=FALSE)
 
                    lkup <- bind_rows(lkup,addrow)
 
@@ -141,9 +122,9 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
                                              OrgStart = OrgDates$Start,
                                              OrgEnd   = OrgDates$End,
                                              ParentCD    = NA,
-                                             ParentNM    = NA,
+                                           #  ParentNM    = NA,
                                              RelStart    = NA,
-                                             RelEnd      = NA)
+                                             RelEnd      = NA, stringsAsFactors=FALSE)
 
                         lkup <- bind_rows(lkup,addrow)
 
@@ -158,7 +139,7 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
 
                             # build lookups record
                             if (!("End" %in% colnames(Rels))) {
-                                Rels$End <- NA
+                                Rels$End[j] <- NA
                             }
 
                             addrow <- data.frame(OrgCD = getOrg$Organisation$OrgId$extension,
@@ -166,9 +147,9 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
                                                  OrgStart    = OrgDates$Start,
                                                  OrgEnd      = OrgDates$End,
                                                  ParentCD    = Rels$extension[j],
-                                                 ParentNM    = NA, # ParentNM, stringsAsFactors=FALSE,
+                                              #   ParentNM    = NA, # ParentNM,
                                                  RelStart    = Rels$Start[j],
-                                                 RelEnd      = Rels$End[j])
+                                                 RelEnd      = Rels$End[j], stringsAsFactors=FALSE)
 
                             lkup <- bind_rows(lkup,addrow)
                         }

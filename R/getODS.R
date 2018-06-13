@@ -125,7 +125,7 @@ getODS <- function(Name             = "All",
         if (i == 0) {
             urlpages  <- paste0(url,"&Offset=1",sep="")
         } else
-            urlpages  <- paste0(url,"&Offset=",i*1000,sep="")
+            urlpages  <- paste0(url,"&Offset=",i*1000+1,sep="")
         httpResponse1 <- GET(urlpages, accept_json())
         results = fromJSON(content(httpResponse1, "text", encoding="UTF-8"))
         pages[[i+1]] <- results$Organisations
