@@ -22,18 +22,40 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
-AddParentName <- function (df, parentCD) {
+ParentCol <- "ParentCD"
 
-    # create ParentOrgNm column placeholder
- #   df$ParentOrgNm <- NA
+AddParentName <- function (df, ParentCol) {
+
+    # create list of unique parent codes
+    codes <- df[ParentCol] %>%
+        unique()
+    names(codes) <- "codes"
+
+    names <- data.frame()
 
     # loop through rows to populate ParentOrgNm
-    for (i in 1:nrow(df)) {
+    for (i in 1:nrow(codes)) {
 
-        ParentOrgNm = getODSfull(parentCD)$Organisation$Name
-        df$ParentOrgNm[i] <- ParentOrgNm
-
+        if (is.na(slice(codes,i))) {
+            thisname <- NA
+            names(thisname) <- "names"
+        } else {
+            thiscode <- slice(codes,i)
+            thisname = getODSfull(thiscode)$Organisation$Name
+            names(thisname) <- "names"
+        }
+    names <- bind_rows(names,thisname)
     }
+    all <- bind_cols(codes, names)
+
+    # vector showing which column from df contains the parent codes
+    which(match(names(df),ParentCol)) # is this useful? does it return 5 - position of ParentCD column in df?
+
+    # vector showing which df rows to join to which all rows
+#    matches <- match(df$ParentCD,all[colref])
+    matches <- match(df$ParentCD,all$codes])
+    df$ParentOrgNM <- all[matches,2]
+    return(df)
 }
 
 
