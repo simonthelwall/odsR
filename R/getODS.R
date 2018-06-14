@@ -39,8 +39,6 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
-
-
 # create function to allow user to specify parameters to input to ODS API call
 getODS <- function(Name             = "All",
                     PostCode         = "All",
@@ -123,11 +121,11 @@ getODS <- function(Name             = "All",
 
   for (i in 0:npages) {
         if (i == 0) {
-            urlpages  <- paste0(url,"&Offset=1",sep="")
+            urlpages  <- url
         } else
             urlpages  <- paste0(url,"&Offset=",i*1000+1,sep="")
         httpResponse1 <- GET(urlpages, accept_json())
-        results = fromJSON(content(httpResponse1, "text", encoding="UTF-8"))
+        results <- fromJSON(content(httpResponse1, as="text", encoding="UTF-8"))
         pages[[i+1]] <- results$Organisations
   }
 

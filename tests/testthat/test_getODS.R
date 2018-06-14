@@ -1,27 +1,39 @@
 context("test_getODS")
 
+# library(testthat)
 
-url1 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=Woodseats"
-url2 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?PostCode=S8"
-url3 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=Woodseats&Status=Active"
-url4 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Status=Active&PrimaryRoleid=RO197&OrgRecordClass=RC1"
-url5 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=Woodseats"
+url1 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=Woodseats&Limit=1000"
+url2 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?PostCode=S8&LastChangeDate=2018-01-01&Limit=1000"
+url3 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=Woodseats&Status=Active&Limit=1000"
+url4 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Status=Active&PrimaryRoleId=RO197&OrgRecordClass=RC1&Limit=1000"
+url5 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=Lancaster&PrimaryRoleId=RO177&NonPrimaryRoleId=RO76&Limit=1000"
+url6 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?LastChangeDate=2018-06-13&Limit=1000"
+url7 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?NonPrimaryRoleId=RO256&Limit=1000" # STP
 
 #test function returns correct results
 test_that("getODS - produces correct output when correct arguments specified",{
 
     expect_equal(getODS(Name="Woodseats"),
-                 fromJSON(content(GET(url1, accept_json()), "text", encoding="UTF-8")),
+                 fromJSON(content(GET(url1, accept_json()), "text", encoding="UTF-8"))$Organisations,
                  check.attributes=FALSE, check.names=FALSE, info="test1")
-    expect_equal(getODS(PostCode="S8"),
-                 fromJSON(content(GET(url2, accept_json()), "text", encoding="UTF-8")),
-                 check.attributes=FALSE, check.names=FALSE, info="test1")
+    expect_equal(getODS(PostCode="S8",LastChangeDate="2018-01-01"),
+                 fromJSON(content(GET(url2, accept_json()), "text", encoding="UTF-8"))$Organisations,
+                 check.attributes=FALSE, check.names=FALSE, info="test2")
     expect_equal(getODS(Name="Woodseats", Status="Active"),
-                 fromJSON(content(GET(url3, accept_json()), "text", encoding="UTF-8")),
-                 check.attributes=FALSE, check.names=FALSE, info="test1")
+                 fromJSON(content(GET(url3, accept_json()), "text", encoding="UTF-8"))$Organisations,
+                 check.attributes=FALSE, check.names=FALSE, info="test3")
     expect_equal(getODS(Status="Active", PrimaryRoleId = "RO197", OrgRecordClass="RC1"),
-                 fromJSON(content(GET(url4, accept_json()), "text", encoding="UTF-8")),
-                 check.attributes=FALSE, check.names=FALSE, info="test1")
+                 fromJSON(content(GET(url4, accept_json()), "text", encoding="UTF-8"))$Organisations,
+                 check.attributes=FALSE, check.names=FALSE, info="test4")
+    expect_equal(getODS(Name="Lancaster", PrimaryRoleId = "RO177", NonPrimaryRoleId="RO76"),
+                 fromJSON(content(GET(url5, accept_json()), "text", encoding="UTF-8"))$Organisations,
+                 check.attributes=FALSE, check.names=FALSE, info="test5")
+    expect_equal(getODS(LastChangeDate="2018-06-13"),
+                 fromJSON(content(GET(url6, accept_json()), "text", encoding="UTF-8"))$Organisations,
+                 check.attributes=FALSE, check.names=FALSE, info="test6")
+    expect_equal(getODS(NonPrimaryRoleId="RO256"),
+                 fromJSON(content(GET(url7, accept_json()), "text", encoding="UTF-8"))$Organisations,
+                 check.attributes=FALSE, check.names=FALSE, info="test7")
 })
 
 
