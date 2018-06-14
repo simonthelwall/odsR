@@ -26,31 +26,17 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
-# PrimaryRole        = "RO177"
-# NonPrimaryRole     = "RO76"
-# ParentPrimaryRoles = c("RO98")
-# FromDate           = "2013-04-01"
-# slicerows <- as.numeric(2001-3000)
-
-# library(dplyr)
-# library(httr)
-# library(jsonlite)
-
-# Output <- OrgParentLkp("RO177","RO76","RO98","2014-04-01")
-
-# create function to generate GP Practice to CCG Lookup data.frame
+# create function to generate Organisation lookup data.frame
 OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDate) {
 
     # retrieve all GP practices - moved outside function to see if helps timeout issue
     allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole)
 
     # Create empty Lookup dataframe
- #   lkup <- setNames(data.frame(matrix(ncol = 8, nrow = 0)),
- #                    c("OrgCD","OrgNM","OrgStart","OrgEnd", "ParentCD", "ParentNM", "RelStart", "RelEnd"))
     lkup <- setNames(data.frame(matrix(ncol = 7, nrow = 0)),
                      c("OrgCD","OrgNM","OrgStart","OrgEnd", "ParentCD", "RelStart", "RelEnd"))
 
-    # loop through each GP Practice record
+    # loop through each Organisation record
 
     for (i in (1:nrow(allorgs))) {
 
@@ -76,35 +62,27 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
                 addOrg <- 0
             }
 
-
-
-            #addOrg <- 0
-            #if(!("End" %in% colnames(OrgDates))) {
-            #    addOrg <- 1
-            #} else if (OrgDates$End >= FromDate | is.na(OrgDates$End)) {
-            #    addOrg <- 1
-            #}
-
+            # continue if Organisation record needs to be included in output
             if (addOrg == 1) {
 
                 # find parent dates
 
-                # check if any relationships
-                if (!(is.list(getOrg$Organisation$Rels))) {       # if no Rels at all (eg GUE992)
+                # if no relationships exist populate parent and rel columns with NA
+                if (!(is.list(getOrg$Organisation$Rels))) {
 
                    addrow <- data.frame(OrgCD = getOrg$Organisation$OrgId$extension,
                                         OrgNM = getOrg$Organisation$Name,
                                         OrgStart = OrgDates$Start,
                                         OrgEnd   = OrgDates$End,
                                         ParentCD    = NA,
-                                       # ParentNM    = NA,
                                         RelStart    = NA,
                                         RelEnd      = NA, stringsAsFactors=FALSE)
 
                    lkup <- bind_rows(lkup,addrow)
 
+                # otherwise find relationships
                 } else {
-
+                    # find relationship dates
                     RelDates <- dplyr::bind_rows(getOrg$Organisation$Rels$Rel$Date) %>%
                         filter(Type == "Operational")
 
@@ -115,7 +93,7 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
                         filter(id %in% ParentPrimaryRoles)
 
 
-                    # if Rels exists but none are correct role (eg P85619)
+                    # if relationships exist but not of correct type populate parent and rel columns with NA
                     if (nrow(Rels) == 0) {
                         addrow <- data.frame(OrgCD = getOrg$Organisation$OrgId$extension,
                                              OrgNM = getOrg$Organisation$Name,
@@ -130,12 +108,11 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
 
                     } else {
 
-                        # if Rels with correct role exist - loop through each parent record
+                        # if Rels with correct role exist - loop through each row to add parent codes
                         for (j in 1:nrow(Rels)) {
 
                             # find CCG Name for CCG Code
-                            ParentCD <- select(Rels,extension)[j,1]
-                      #      ParentNM <- getODSfull(ParentCD)$Organisation$Name    # see if getting parent name separately helps with timeout
+                        #    ParentCD <- select(Rels,extension)[j,1]
 
                             # build lookups record
                             if (!("End" %in% colnames(Rels))) {
@@ -147,7 +124,6 @@ OrgParentLkp <- function(PrimaryRole, NonPrimaryRole, ParentPrimaryRoles, FromDa
                                                  OrgStart    = OrgDates$Start,
                                                  OrgEnd      = OrgDates$End,
                                                  ParentCD    = Rels$extension[j],
-                                              #   ParentNM    = NA, # ParentNM,
                                                  RelStart    = Rels$Start[j],
                                                  RelEnd      = Rels$End[j], stringsAsFactors=FALSE)
 
