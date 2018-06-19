@@ -3,7 +3,6 @@
 #' Extracts full ODS data for a single organisation from the NHS Digitial ODS ORD API into a list of length 1.
 #'
 #' @param ODSCode The organisation to return details for; quoted string; no default
-#' @inheritparams getODS
 #'
 #' @return returns a list of length 1 containing the full details for the Organisation including:
 #'         Name, Legal and Operational Start and End Dates, Status, Last Change Date, Organisation Record Class,
@@ -28,16 +27,14 @@
 
 
 # create function to allow user to specify parameters to input to ODS API call
-getODSfull <- function(ODSCode,Format="application/json") {
+getODSfull <- function(ODSCode) {
 
    # error checks
     if (is.null(ODSCode)) {
           stop("ERROR: Please specify an ODS Code to retrieve reference data for")
-    } else if (!(tolower(Format) %in% c("json", "xml","text/json","text/xml","application/json","application/xml"))) {
-          stop("ERROR: Format is invalid - valid values: json, xml, text/json, text/xml, application/json, application/xml")
     }
 
-    urlfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=",Format,sep="")
+    urlfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=application/json",sep="")
 
     # better to set config elsewhere - not within function ??
     set_config(config(ssl_verifypeer = 0L))

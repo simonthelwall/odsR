@@ -6,7 +6,7 @@
 \usage{
 getODS(Name = "All", PostCode = "All", LastChangeDate = "All",
   Status = "All", PrimaryRoleId = "All", NonPrimaryRoleId = "All",
-  OrgRecordClass = "All", Limit = 1000, Offset = 1, Format = "json")
+  OrgRecordClass = "All")
 }
 \arguments{
 \item{Name}{Search organisations based on name. Organisations that contain the argument string in their name are returned.;
@@ -30,16 +30,6 @@ quoted string; default "All" applies no filter}
 
 \item{OrgRecordClass}{Search for oganisations based on their record class. Arguments can be "RC1" or "RC2".;
 quoted string; default "All" applies no filter}
-
-\item{Limit}{Limit the number of organisations returned per response. The argument can range from 1-1000.
-numeric integer; default 1000}
-
-\item{Offset}{Offset the start point of the result set, by the value specified. The argument can range from 1-****.
-numeric integer; default 1}
-
-\item{Format}{Specify the output format.  Arguments can be "xml", "json", "text/json", "text/xml",
-                "application/json" and "application/xml". quoted string, default "json"
-#'}
 }
 \value{
 returns a data.frame containing the following details for the organisations that meet the filter specifications:
@@ -47,7 +37,7 @@ returns a data.frame containing the following details for the organisations that
         Non primary Role ID, Primary Role Description, Organisation Link (API endpoint URL for full organisation record)
 }
 \description{
-Extracts ODS data for multiple organisations from the NHS Digitial ODS ORD API into a data frame.
+Extracts summary ODS data for multiple organisations from the NHS Digitial ODS ORD API into a data frame.
 }
 \section{Notes}{
  View the NHS Digital ODS API Implementation Guide at
@@ -59,4 +49,8 @@ Extracts ODS data for multiple organisations from the NHS Digitial ODS ORD API i
 # return Organisation data for all active GP practices
 getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 
+}
+\seealso{
+Other odsR package functions: \code{\link{AddOrgName}},
+  \code{\link{OrgParentLkp}}, \code{\link{getODSfull}}
 }
