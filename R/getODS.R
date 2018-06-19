@@ -27,8 +27,11 @@
 #'          View the NHS Digital ODS API Suite at \url{https://directory.spineservices.nhs.uk/ODSAPISuite}
 #'
 #' @examples
-#' # return Organisation data for all active GP practices
+#' # return Organisation data for all active GP practices:
 #' getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
+#'
+#' # replace spaces with an underscore:
+#' getODS(Name="WoodseatsMedicalCentre")
 #'
 #' @import dplyr
 #' @import jsonlite
