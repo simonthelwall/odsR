@@ -61,7 +61,7 @@ AddOrgName <- function (data, CodeColName, AddedColName) {
     names(data) <- c(orignames,AddedColName)
 
     # reorder columns so new Name column appears after specified code column
-    codecol <- which(match(names(data),CodeCol) == T)
+    codecol <- which(match(names(data),CodeColName) == T)
     neworder <- c(1:codecol,ncol(data),(codecol+1):(ncol(data)-1))
     data <- data[,neworder]
 
