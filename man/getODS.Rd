@@ -46,8 +46,11 @@ Extracts summary ODS data for multiple organisations from the NHS Digitial ODS O
 }
 
 \examples{
-# return Organisation data for all active GP practices
+# return Organisation data for all active GP practices:
 getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
+
+# replace spaces with an underscore:
+getODS(Name="Woodseats_Medical_Centre")
 
 }
 \seealso{

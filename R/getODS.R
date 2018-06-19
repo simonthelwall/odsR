@@ -31,7 +31,7 @@
 #' getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 #'
 #' # replace spaces with an underscore:
-#' getODS(Name="WoodseatsMedicalCentre")
+#' getODS(Name="Woodseats_Medical_Centre")
 #'
 #' @import dplyr
 #' @import jsonlite
@@ -43,7 +43,7 @@
 # -------------------------------------------------------------------------------------------------
 
 # create function to allow user to specify parameters to input to ODS API call
-getODS <- function(Name             = "All",
+getODS <- function(Name              = "All",
                     PostCode         = "All",
                     LastChangeDate   = "All",
                     Status           = "All",
@@ -57,17 +57,16 @@ getODS <- function(Name             = "All",
         PrimaryRoleId  == "All" & NonPrimaryRoleId == "All" &
         OrgRecordClass == "All") {
           stop("ERROR: at least one organisational parameter must be specified")
- #   } else if (!(is.date(LastChangeDate))) {
- #         stop("ERROR: LastChangeDate is not a valid date")
+    } else if (LastChangeDate != "All" &
+                 is.na(as.Date(LastChangeDate,"%Y-%m-%d"))) {
+          stop("ERROR: LastChangeDate is not a valid date")
     } else if (!(tolower(Status) %in% c("all", "active","inactive"))) {
           stop("ERROR: Status is invalid - valid values are All (default), Active, Inactive")
     } else if (!(PrimaryRoleId == "All" |
-                 tolower(substr(PrimaryRoleId,1,2)) == "ro" |
-                 as.integer(substr(PrimaryRoleId,3,3)))) {
+                 tolower(substr(PrimaryRoleId,1,2)) == "ro")) {
           stop("ERROR: PrimaryRoleId is invalid - valid values begin with RO followed by a number, or specify All")
     } else if (!(NonPrimaryRoleId == "All" |
-                 tolower(substr(NonPrimaryRoleId,1,2)) == "ro" |
-                 as.integer(substr(NonPrimaryRoleId,3,3)))) {
+                 tolower(substr(NonPrimaryRoleId,1,2)) == "ro")) {
           stop("ERROR: NonPrimaryRoleId is invalid - valid values begin with RO followed by a number, or specify All")
     } else if (!(tolower(OrgRecordClass) %in% c("all", "rc1","rc2"))) {
           stop("ERROR: OrgRecordClass is invalid - valid values are All (default), RC1 (Health and Social Care Organisation), RC2 (Health and Social Care Organisation Site)")
