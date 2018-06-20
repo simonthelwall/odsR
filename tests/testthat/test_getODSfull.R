@@ -5,12 +5,6 @@ url1 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/RRF12"
 url2 <- "https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/X25002AE"
 
 
-# test function:
-checksingle <- getODSfull(ODSCode="RRF12")
-
-
-
-
 #test function returns correct results
 test_that("getODS - produces correct output when correct arguments specified",{
     expect_equal(getODSfull("RRF12"),
@@ -21,9 +15,3 @@ test_that("getODS - produces correct output when correct arguments specified",{
                  check.attributes=FALSE, check.names=FALSE, info="test2")
 })
 
-
-# test error handling
-test_that("getODS - errors are generated when invalid arguments are used",{
-    expect_error(getODS(),
-                 "ERROR: at least one organisational parameter must be specified", info="error nothing specified1")
-})

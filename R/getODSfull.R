@@ -29,11 +29,6 @@
 # create function to allow user to specify parameters to input to ODS API call
 getODSfull <- function(ODSCode) {
 
-   # error checks
-    if (is.null(ODSCode)) {
-          stop("ERROR: Please specify an ODS Code to retrieve reference data for")
-    }
-
     urlfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=application/json",sep="")
 
     # better to set config elsewhere - not within function ??
