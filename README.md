@@ -5,26 +5,21 @@ odsR Package
 
 This is an R package to facilitate the extraction of NHS organisation data from the NHS Digital ODS API into the R environment
 
-Any feedback would be appreciated and can be provided using the Issues section of the GitLab/GitHub repository, or by emailing <PHDS@phe.gov.uk>
+Any feedback would be appreciated and can be provided using the Issues section of the GitHub repository, or by emailing <PHDS@phe.gov.uk>
 
 <br/> <br/>
 
 Installation
 ------------
 
-#### From Git
+#### From GitHub
 
-You can install the latest version of odsR from Git with:
+You can install the latest version of odsR from GitHub with:
 
 ``` r
-# GitLab
-# install.packages("devtools")
-if (!require(devtools)) install.packages("devtools")
-devtools::install_git('<GitLab Repo URL>', build_vignettes=TRUE)
 
-# GitHub 
 # install.packages("devtools")
-devtools::install_github("<GitHub Repo URL>",
+devtools::install_github("https://github.com/PublicHealthEngland/odsR",
                          build_vignettes = TRUE,
                          dependencies = "suggests")
 ```
@@ -63,6 +58,7 @@ Package Contents
 The package contains the following functions - see individual item documentation for full details
 
 **Functions:**
+
 RELEASED:
 
 -   getODS (get summary organisation data for all organisations that meet the specified filter criteria)
