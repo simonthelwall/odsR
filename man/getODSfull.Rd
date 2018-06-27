@@ -29,6 +29,5 @@ getODSfull(ODSCode="RRF12")
 
 }
 \seealso{
-Other odsR package functions: \code{\link{AddOrgName}},
-  \code{\link{OrgParentLkp}}, \code{\link{getODS}}
+Other odsR package functions: \code{\link{getODS}}
 }

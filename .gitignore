@@ -30,3 +30,7 @@
 #rsconnect/
 .Rproj.user
 inst/doc
+data-raw
+README.Rmd
+Inst/doc
+

@@ -5,30 +5,46 @@ odsR Package
 
 This is an R package to facilitate the extraction of NHS organisation data from the NHS Digital ODS API into the R environment
 
-Any feedback would be appreciated and can be provided using the Issues section of the GitLab repository, or by emailing <PHDS@phe.gov.uk>
+Any feedback would be appreciated and can be provided using the Issues section of the GitLab/GitHub repository, or by emailing <PHDS@phe.gov.uk>
 
 <br/> <br/>
 
 Installation
 ------------
 
-#### From zip
+#### From Git
 
-Download this repository from GitLab and either build from source or do:
+You can install the latest version of odsR from Git with:
 
 ``` r
+# GitLab
+# install.packages("devtools")
+if (!require(devtools)) install.packages("devtools")
+devtools::install_git('<GitLab Repo URL>', build_vignettes=TRUE)
+
+# GitHub 
+# install.packages("devtools")
+devtools::install_github("<GitHub Repo URL>",
+                         build_vignettes = TRUE,
+                         dependencies = "suggests")
+```
+
+#### From zip
+
+Download this repository from Git and either build from source or do the following:
+
+``` r
+
+# install.packages("devtools")
 source <- devtools:::source_pkg("C:/path/to/odsR-master")
 install(source)
 ```
 
-#### With devtools
+#### Using Base R
 
-You can install the latest version of odsR from GitLab with:
+To install the package without the use of devtools, download the .tar.gz file and then run:
 
-``` r
-if (!require(devtools)) install.packages("devtools")
-devtools::install_git('https://gitlab.phe.gov.uk/georgina.anderson/odsR', build_vignettes=TRUE)
-```
+install.packages(path\_to\_file, repos = NULL, type="source") Where path\_to\_file would represent the full path and file name
 
 <br/> <br/>
 
@@ -47,7 +63,15 @@ Package Contents
 The package contains the following functions - see individual item documentation for full details
 
 **Functions:**
-- getODS (get summary organisation data for multiple organisations) - getODS1 (get full organisation data for a single organisation - not yet included) - getODSsync (get organisation API urls for any organisations whose details have changed since a specific date - not yet included)
+RELEASED:
+
+-   getODS (get summary organisation data for all organisations that meet the specified filter criteria)
+-   getODSfull (get full organisation data for a single organisation)
+
+IN DEVELOPMENT:
+
+-   AddOrgName (insert an Organisation Name column to a data frame that contains Organisation Codes)
+-   OrgRelLkp (create lookup tables from one organisation type to another based on relationship information held within the ODS API)
 
 **Datasets:**
 - none

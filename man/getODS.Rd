@@ -54,6 +54,5 @@ getODS(Name="Woodseats_Medical_Centre")
 
 }
 \seealso{
-Other odsR package functions: \code{\link{AddOrgName}},
-  \code{\link{OrgParentLkp}}, \code{\link{getODSfull}}
+Other odsR package functions: \code{\link{getODSfull}}
 }
