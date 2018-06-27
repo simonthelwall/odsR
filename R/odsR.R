@@ -1,5 +1,5 @@
 #' odsR: A package for extracting NHS organisation data
-#' from the NHS Digital OD ORD API
+#' from the NHS Digital ODS ORD API
 #'
 #' @docType package
 #' @name odsR
