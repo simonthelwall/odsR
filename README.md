@@ -3,9 +3,9 @@
 odsR Package
 ============
 
-This is an R package to facilitate the extraction of NHS organisation data from the NHS Digital ODS API into the R environment
+This is an R package to facilitate the extraction of NHS organisation data from the NHS Digital ODS API into the R environment.
 
-Any feedback would be appreciated and can be provided using the Issues section of the GitHub repository, or by emailing <PHDS@phe.gov.uk>
+Any feedback would be appreciated and can be provided using the Issues section of the GitHub repository, or by emailing <PHDS@phe.gov.uk>. Please note that whilst we are happy to share this package we have limited capacity to invest time in its further development.
 
 <br/> <br/>
 
@@ -22,6 +22,11 @@ You can install the latest version of odsR from GitHub with:
 devtools::install_github("https://github.com/PublicHealthEngland/odsR",
                          build_vignettes = TRUE,
                          dependencies = "suggests")
+
+
+# you may need to install and load the httr library and then execute the code below 
+# note that this removes verification of authenticity of the peer's certificate 
+httr::set_config(config(ssl_verifypeer = 0L))
 ```
 
 #### From zip
