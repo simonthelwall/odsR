@@ -28,9 +28,12 @@ test_that("getODS - produces correct output when correct arguments specified",{
     expect_equal(getODS(Name="Lancaster", PrimaryRoleId = "RO177", NonPrimaryRoleId="RO76"),
                  fromJSON(content(GET(url5, accept_json()), "text", encoding="UTF-8"))$Organisations,
                  check.attributes=FALSE, check.names=FALSE, info="test5")
-    expect_equal(getODS(LastChangeDate="2018-06-13"),
-                 fromJSON(content(GET(url6, accept_json()), "text", encoding="UTF-8"))$Organisations,
-                 check.attributes=FALSE, check.names=FALSE, info="test6")
+ # Run this test at time of release but then comment out as number of records returned will
+ # increase to >1000 over time
+
+ #   expect_equal(getODS(LastChangeDate="2018-06-13"),
+ #                fromJSON(content(GET(url6, accept_json()), "text", encoding="UTF-8"))$Organisations,
+ #                check.attributes=FALSE, check.names=FALSE, info="test6")
     expect_equal(getODS(NonPrimaryRoleId="RO256"),
                  fromJSON(content(GET(url7, accept_json()), "text", encoding="UTF-8"))$Organisations,
                  check.attributes=FALSE, check.names=FALSE, info="test7")
