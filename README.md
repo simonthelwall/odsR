@@ -19,14 +19,9 @@ You can install the latest version of odsR from GitHub with:
 ``` r
 
 # install.packages("devtools")
-devtools::install_github("https://github.com/PublicHealthEngland/odsR",
+devtools::install_github("PublicHealthEngland/odsR",
                          build_vignettes = TRUE,
                          dependencies = "suggests")
-
-
-# you may need to install and load the httr library and then execute the code below 
-# note that this removes verification of authenticity of the peer's certificate 
-httr::set_config(config(ssl_verifypeer = 0L))
 ```
 
 #### From zip
@@ -36,8 +31,8 @@ Download this repository from Git and either build from source or do the followi
 ``` r
 
 # install.packages("devtools")
-source <- devtools:::source_pkg("C:/path/to/odsR-master")
-install(source)
+source <- devtools:::source_pkg("C:/path/to/odsR-master.zip")
+devtools::install(source)
 ```
 
 #### Using Base R
