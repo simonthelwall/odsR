@@ -1,9 +1,5 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Build Status](https://travis-ci.org/PublicHealthEngland/odsR.svg)](https://travis-ci.org/PublicHealthEngland/odsR)
-
-[![Coverage Status](https://coveralls.io/repos/github/PublicHealthEngland/odsR/badge.svg?branch=master)](https://coveralls.io/github/PublicHealthEngland/odsR?branch=master)
-
 odsR Package
 ============
 
@@ -70,7 +66,7 @@ RELEASED:
 
 IN DEVELOPMENT:
 
--   AddOrgName (insert an Organisation Name column to a data frame that contains Organisation Codes)
+-   addorgname (add an Organisation Name column to a data frame that contains Organisation Codes)
 -   OrgRelLkp (create lookup tables from one organisation type to another based on relationship information held within the ODS API)
 
 **Datasets:**
