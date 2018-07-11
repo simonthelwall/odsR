@@ -50,7 +50,8 @@ Extracts summary ODS data for multiple organisations from the NHS Digital ODS OR
 # return summary organisation data for all organisations with 'Woodseats' in their name
 getODS(Name="Woodseats")
 
-# return summary organisation data for all organisations with 'Woodseats Medical Centre' in their name
+# return summary organisation data for all organisations
+# with 'Woodseats Medical Centre' in their name
 # replace spaces with an underscore:
 getODS(Name="Woodseats_Medical_Centre")
 
