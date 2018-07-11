@@ -32,9 +32,9 @@
 #' getODS(Name="Woodseats")
 #'
 #' # return summary organisation data for all organisations
-#' # with 'Woodseats Medical Centre' in their name
-#' # replace spaces with an underscore:
+#' # with 'Woodseats Medical Centre' in their name - two options to handle spaces:
 #' getODS(Name="Woodseats_Medical_Centre")
+#' getODS(Name="Woodseats Medical Centre")
 #'
 #' # return summary organisation data for all currently active GP practices:
 #' # commented out as takes too long to run with package build
@@ -43,6 +43,7 @@
 #' @import dplyr
 #' @import jsonlite
 #' @import httr
+#' @importFrom utils URLencode
 #'
 #' @export
 #'
@@ -112,7 +113,7 @@ getODS <- function(Name              = "All",
     }
 
     # append offset, limit and format to URL
-    url <- paste0(url,"&_format=application/json&Limit=1000")
+    url <- utils::URLencode(paste0(url,"&_format=application/json&Limit=1000"))
 
   # set config
   set_config(config(ssl_verifypeer = 0L))

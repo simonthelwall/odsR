@@ -19,6 +19,7 @@
 #' @import dplyr
 #' @import jsonlite
 #' @import httr
+#' @importFrom utils URLencode
 #'
 #' @export
 #'
@@ -29,7 +30,7 @@
 # create function to allow user to specify parameters to input to ODS API call
 getODSfull <- function(ODSCode) {
 
-    urlfull <- paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=application/json",sep="")
+    urlfull <- utils::URLencode(paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=application/json",sep=""))
 
     # better to set config elsewhere - not within function ??
     set_config(config(ssl_verifypeer = 0L))
