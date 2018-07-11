@@ -32,9 +32,9 @@
 #' getODS(Name="Woodseats")
 #'
 #' # return summary organisation data for all organisations
-#' # with 'Woodseats Medical Centre' in their name
-#' # replace spaces with an underscore:
+#' # with 'Woodseats Medical Centre' in their name - two options to handle spaces:
 #' getODS(Name="Woodseats_Medical_Centre")
+#' getODS(Name="Woodseats Medical Centre")
 #'
 #' # return summary organisation data for all currently active GP practices:
 #' # commented out as takes too long to run with package build
