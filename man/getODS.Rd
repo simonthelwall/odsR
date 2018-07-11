@@ -28,7 +28,7 @@ quoted string; default "All" applies no filter}
 \item{NonPrimaryRoleId}{Search for organisations based on their non primary role codes.;
 quoted string; default "All" applies no filter}
 
-\item{OrgRecordClass}{Search for oganisations based on their record class. Arguments can be "RC1" or "RC2".;
+\item{OrgRecordClass}{Search for organisations based on their record class. Arguments can be "RC1" or "RC2".;
 quoted string; default "All" applies no filter}
 }
 \value{
@@ -37,7 +37,7 @@ returns a data.frame containing the following details for the organisations that
         Non primary Role ID, Primary Role Description, Organisation Link (API endpoint URL for full organisation record)
 }
 \description{
-Extracts summary ODS data for multiple organisations from the NHS Digitial ODS ORD API into a data frame.
+Extracts summary ODS data for multiple organisations from the NHS Digital ODS ORD API into a data frame.
 }
 \section{Notes}{
  View the NHS Digital ODS API Implementation Guide at
@@ -46,11 +46,18 @@ Extracts summary ODS data for multiple organisations from the NHS Digitial ODS O
 }
 
 \examples{
-# return Organisation data for all active GP practices:
-getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 
+# return summary organisation data for all organisations with 'Woodseats' in their name
+getODS(Name="Woodseats")
+
+# return summary organisation data for all organisations
+# with 'Woodseats Medical Centre' in their name
 # replace spaces with an underscore:
 getODS(Name="Woodseats_Medical_Centre")
+
+# return summary organisation data for all currently active GP practices:
+# commented out as takes too long to run with package build
+# getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 
 }
 \seealso{

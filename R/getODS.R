@@ -1,6 +1,6 @@
 #' getODS
 #'
-#' Extracts summary ODS data for multiple organisations from the NHS Digitial ODS ORD API into a data frame.
+#' Extracts summary ODS data for multiple organisations from the NHS Digital ODS ORD API into a data frame.
 #'
 #' @param Name     Search organisations based on name. Organisations that contain the argument string in their name are returned.;
 #'                 quoted string; default "All" applies no filter
@@ -15,7 +15,7 @@
 #'                 quoted string; default "All" applies no filter
 #' @param NonPrimaryRoleId Search for organisations based on their non primary role codes.;
 #'                 quoted string; default "All" applies no filter
-#' @param OrgRecordClass Search for oganisations based on their record class. Arguments can be "RC1" or "RC2".;
+#' @param OrgRecordClass Search for organisations based on their record class. Arguments can be "RC1" or "RC2".;
 #'                 quoted string; default "All" applies no filter
 #'
 #' @return returns a data.frame containing the following details for the organisations that meet the filter specifications:
@@ -28,13 +28,17 @@
 #'
 #' @examples
 #'
-#' /dontrun {
-#' #return Organisation data for all active GP practices:
-#' getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
-#' }
+#' # return summary organisation data for all organisations with 'Woodseats' in their name
+#' getODS(Name="Woodseats")
 #'
+#' # return summary organisation data for all organisations
+#' # with 'Woodseats Medical Centre' in their name
 #' # replace spaces with an underscore:
 #' getODS(Name="Woodseats_Medical_Centre")
+#'
+#' # return summary organisation data for all currently active GP practices:
+#' # commented out as takes too long to run with package build
+#' # getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 #'
 #' @import dplyr
 #' @import jsonlite
@@ -110,7 +114,7 @@ getODS <- function(Name              = "All",
     # append offset, limit and format to URL
     url <- paste0(url,"&_format=application/json&Limit=1000")
 
-  # better to set config elsewhere - not within function ??
+  # set config
   set_config(config(ssl_verifypeer = 0L))
 
   # Get API response
@@ -122,21 +126,19 @@ getODS <- function(Name              = "All",
 
   # Loop through responses to retrieve all data
 
-  pages <- list()
+  pages <- data.frame()
 
   for (i in 0:npages) {
         if (i == 0) {
             urlpages  <- url
         } else
-            urlpages  <- paste0(url,"&Offset=",i*1000+1,sep="")
+            urlpages  <- paste0(url,"&Offset=",i*1000,sep="")
         httpResponse1 <- GET(urlpages, accept_json())
         results <- fromJSON(content(httpResponse1, as="text", encoding="UTF-8"))
-        pages[[i+1]] <- results$Organisations
+        pages <- bind_rows(pages,results$Organisations)
   }
 
-  getODS <- rbind_pages(pages)
-
-  return(getODS)
+  return(pages)
 }
 
 
