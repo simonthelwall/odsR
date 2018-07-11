@@ -1,6 +1,6 @@
 #' getODSfull
 #'
-#' Extracts full ODS data for a single organisation from the NHS Digitial ODS ORD API into a list of length 1.
+#' Extracts full ODS data for a single organisation from the NHS Digital ODS ORD API into a list of length 1.
 #'
 #' @param ODSCode The organisation to return details for; quoted string; no default
 #'

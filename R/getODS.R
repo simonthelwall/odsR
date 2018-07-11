@@ -1,6 +1,6 @@
 #' getODS
 #'
-#' Extracts summary ODS data for multiple organisations from the NHS Digitial ODS ORD API into a data frame.
+#' Extracts summary ODS data for multiple organisations from the NHS Digital ODS ORD API into a data frame.
 #'
 #' @param Name     Search organisations based on name. Organisations that contain the argument string in their name are returned.;
 #'                 quoted string; default "All" applies no filter
@@ -15,7 +15,7 @@
 #'                 quoted string; default "All" applies no filter
 #' @param NonPrimaryRoleId Search for organisations based on their non primary role codes.;
 #'                 quoted string; default "All" applies no filter
-#' @param OrgRecordClass Search for oganisations based on their record class. Arguments can be "RC1" or "RC2".;
+#' @param OrgRecordClass Search for organisations based on their record class. Arguments can be "RC1" or "RC2".;
 #'                 quoted string; default "All" applies no filter
 #'
 #' @return returns a data.frame containing the following details for the organisations that meet the filter specifications:

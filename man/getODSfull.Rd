@@ -15,7 +15,7 @@ returns a list of length 1 containing the full details for the Organisation incl
         Address, Postcode, Contact Information, Roles and Relationships to other Organisations
 }
 \description{
-Extracts full ODS data for a single organisation from the NHS Digitial ODS ORD API into a list of length 1.
+Extracts full ODS data for a single organisation from the NHS Digital ODS ORD API into a list of length 1.
 }
 \section{Notes}{
  View the NHS Digital ODS API Implementation Guide at
