@@ -122,21 +122,19 @@ getODS <- function(Name              = "All",
 
   # Loop through responses to retrieve all data
 
-  pages <- list()
+  pages <- data.frame()
 
   for (i in 0:npages) {
         if (i == 0) {
             urlpages  <- url
         } else
-            urlpages  <- paste0(url,"&Offset=",i*1000+1,sep="")
+            urlpages  <- paste0(url,"&Offset=",i*1000,sep="")
         httpResponse1 <- GET(urlpages, accept_json())
         results <- fromJSON(content(httpResponse1, as="text", encoding="UTF-8"))
-        pages[[i+1]] <- results$Organisations
+        pages <- bind_rows(pages,results$Organisations)
   }
 
-  getODS <- rbind_pages(pages)
-
-  return(getODS)
+  return(pages)
 }
 
 
