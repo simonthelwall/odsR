@@ -28,13 +28,16 @@
 #'
 #' @examples
 #'
-#' /dontrun {
-#' #return Organisation data for all active GP practices:
-#' getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
-#' }
+#' # return summary organisation data for all organisations with 'Woodseats' in their name
+#' getODS(Name="Woodseats")
 #'
+#' # return summary organisation data for all organisations with 'Woodseats Medical Centre' in their name
 #' # replace spaces with an underscore:
 #' getODS(Name="Woodseats_Medical_Centre")
+#'
+#' # return summary organisation data for all currently active GP practices:
+#' # commented out as takes too long to run with package build
+#' # getODS(Status="Active", PrimaryRoleId = "RO177", NonPrimaryRoleId = "RO76")
 #'
 #' @import dplyr
 #' @import jsonlite
