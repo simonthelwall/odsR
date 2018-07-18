@@ -88,10 +88,10 @@ RELEASED:
 
 - getODS      (get summary organisation data for all organisations that meet the specified filter criteria)
 - getODSfull  (get full organisation data for a single organisation)
+- addorgname  (add an Organisation Name column to a data frame that contains Organisation Codes)
 
 IN DEVELOPMENT:  
 
-- addorgname (add an Organisation Name column to a data frame that contains Organisation Codes)
 - OrgRelLkp  (create lookup tables from one organisation type to another based on relationship information held within the ODS API)
 
 **Datasets:**  
