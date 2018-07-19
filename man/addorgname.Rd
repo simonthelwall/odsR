@@ -36,6 +36,6 @@ addorgname(codelist, NameCol="MyNewColumnName", insert=FALSE)
 
 }
 \seealso{
-Other odsR package functions: \code{\link{getODSfull}},
-  \code{\link{getODS}}
+Other odsR package functions: \code{\link{OrgRelLkp}},
+  \code{\link{getODSfull}}, \code{\link{getODS}}
 }
