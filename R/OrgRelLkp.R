@@ -27,7 +27,7 @@
 #' # return GP Practice to CCG Lookup to include all organisations effective on or after 01-04-2013
 #' OrgRelLkp(PrimaryRole    = "RO177",
 #'           NonPrimaryRole = "RO76",
-#'           RelTypes       = "RE4"
+#'           RelTypes       = "RE4",
 #'           RelRoles       = "RO98",
 #'           FromDate       = "2013-04-01")
 #'
@@ -43,6 +43,13 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
+# PrimaryRole = "RO177"
+# NonPrimaryRole = "RO76"
+# RelTypes = "RE4"
+# RelPrimaryRoles = "RO98"
+# FromDate = "2013-04-01"
+
+
 # create function to generate Organisation lookup data.frame
 OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, FromDate) {
 
@@ -50,22 +57,22 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
     message("Please Note that this function is experimental and all output should be independently QAd")
 
     # retrieve all organisations to include records for
-    allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole)
+    allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole) %>%
+        unique()
 
     # Create empty Lookup dataframe
-    lkup <- setNames(data.frame(matrix(ncol = 9, nrow = 0)),
-                     c("OrgCD","OrgNM","OrgStart","OrgEnd",
+    lkup <- setNames(data.frame(matrix(ncol = 11, nrow = 0)),
+                     c("OrgCD","OrgNM","OrgStart","OrgEnd","OrgRoleStart","OrgRoleEnd",
                        "RelOrgCD", "RelType","RelOrgPrimaryRole","RelStart", "RelEnd"))
 
     # loop through each Organisation record
 
     for (i in (1:nrow(allorgs))) {
 
-        OrgExists <- NA
+        addOrg <- NA
         getOrg <- getODSfull(allorgs[i,2])
 
-
-        # get Organisation dates
+        # get Organisation Start and End dates
         OrgDates   <- dplyr::bind_rows(getOrg$Organisation$Date) %>%
             filter(Type=="Operational")
 
@@ -74,8 +81,29 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
             OrgDates$End <- NA
         }
 
-        # keep only organisations in operation after specified FromDate
-        if(OrgDates$End >= FromDate | is.na(OrgDates$End)) {
+
+        # get dates when organisation was operational in the role specified
+        RoleIds   <- data.frame(Role = getOrg$Organisation$Roles$Role$id, stringsAsFactors=FALSE)
+        RoleDates <- dplyr::bind_rows(getOrg$Organisation$Roles$Role$Date) %>%
+            filter(Type == "Operational")
+        Roles     <- dplyr::bind_cols(RoleIds,RoleDates) %>%
+            filter(Role %in% c(PrimaryRole, NonPrimaryRole))
+
+        # add end column if missing and get period in specified role
+        if (!("End" %in% colnames(Roles))) {
+            RolePeriod <- data.frame(RoleStart = max(Roles$Start),
+                                     RoleEnd   = NA,
+                                     stringsAsFactors=FALSE)
+        } else {
+            RolePeriod <- data.frame(RoleStart = max(Roles$Start),
+                                     RoleEnd = min(Roles$End, na.rm=TRUE),
+                                     stringsAsFactors=FALSE)
+        }
+
+        # keep only organisations in operation in specified role after specified FromDate
+        if(is.na(RolePeriod$RoleEnd)) {
+            addOrg <- 1
+        } else if(RolePeriod$RoleEnd >= FromDate) {
             addOrg <- 1
         } else {
             addOrg <- 0
@@ -93,6 +121,8 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
                                     OrgNM = getOrg$Organisation$Name,
                                     OrgStart  = OrgDates$Start,
                                     OrgEnd    = OrgDates$End,
+                                    OrgRoleStart = RolePeriod$RoleStart,
+                                    OrgRoleEnd   = RolePeriod$RoleEnd,
                                     RelOrgCD  = NA,
                                     RelType   = NA,
                                     RelOrgPrimaryRole = NA,
@@ -125,6 +155,8 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
                                          OrgNM = getOrg$Organisation$Name,
                                          OrgStart = OrgDates$Start,
                                          OrgEnd   = OrgDates$End,
+                                         OrgRoleStart = RolePeriod$RoleStart,
+                                         OrgRoleEnd   = RolePeriod$RoleEnd,
                                          RelOrgCD    = NA,
                                          RelType     = NA,
                                          RelOrgPrimaryRole = NA,
@@ -147,6 +179,8 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
                                              OrgNM = getOrg$Organisation$Name,
                                              OrgStart    = OrgDates$Start,
                                              OrgEnd      = OrgDates$End,
+                                             OrgRoleStart = RolePeriod$RoleStart,
+                                             OrgRoleEnd   = RolePeriod$RoleEnd,
                                              RelOrgCD    = Rels$extension[j],
                                              RelType     = Rels$typeid[j],
                                              RelOrgPrimaryRole = Rels$id[j],
