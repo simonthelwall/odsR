@@ -43,12 +43,6 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
-# orgdata <- allorgs
-# orgcol <- 2
-# RelTypes <- "RE4"
-# RelPrimaryRoles <- "RO98"
-# FromDate <- "2013-04-01"
-
 
 # create function to generate Organisation lookup data.frame
 OrgRelLkp <- function(orgdata, orgcol = 2, RelTypes, RelPrimaryRoles, FromDate) {
@@ -57,12 +51,8 @@ OrgRelLkp <- function(orgdata, orgcol = 2, RelTypes, RelPrimaryRoles, FromDate) 
     message("Please Note that this function is experimental and has not been thoroughly
              QAd for every possible set of arguments.")
 
-    # retrieve all organisations to include records for
-#    allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole) %>%
-#        unique()
-
     # Create empty Lookup dataframe
-    lkup <- setNames(data.frame(matrix(ncol = 11, nrow = 0)),
+    lkup <- setNames(data.frame(matrix(ncol = 9, nrow = 0)),
                      c("OrgCD","OrgNM","OrgStart","OrgEnd",
                        "RelOrgCD", "RelType","RelOrgPrimaryRole","RelStart", "RelEnd"))
 
@@ -71,7 +61,7 @@ OrgRelLkp <- function(orgdata, orgcol = 2, RelTypes, RelPrimaryRoles, FromDate) 
     for (i in (1:nrow(orgdata))) {
 
         addOrg <- NA
-        getOrg1 <- getODSfull(orgdata[i,orgcol])
+        getOrg <- getODSfull(orgdata[i,orgcol])
 
         # get Organisation Start and End dates
         OrgDates   <- dplyr::bind_rows(getOrg$Organisation$Date) %>%
@@ -82,14 +72,12 @@ OrgRelLkp <- function(orgdata, orgcol = 2, RelTypes, RelPrimaryRoles, FromDate) 
             OrgDates$End <- NA
         }
 
-
         # keep only organisations in operation after specified FromDate
         if(OrgDates$End >= FromDate | is.na(OrgDates$End)) {
             addOrg <- 1
         } else {
             addOrg <- 0
         }
-
 
         # continue if Organisation record needs to be included in output
         if (addOrg == 1) {
