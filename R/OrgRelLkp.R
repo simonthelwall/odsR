@@ -62,9 +62,22 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
         unique()
 
     # Create empty Lookup dataframe
-    lkup <- setNames(data.frame(matrix(ncol = 11, nrow = 0)),
-                     c("OrgId","OrgName","OrgStart","OrgEnd","OrgRoleStart","OrgRoleEnd",
-                       "RelOrgId", "RelType","RelOrgPrimaryRole","RelStart", "RelEnd"))
+#    lkup <- setNames(data.frame(matrix(ncol = 11, nrow = 0)),
+#                     c("OrgId","OrgName","OrgStart","OrgEnd","OrgRoleStart","OrgRoleEnd",
+#                       "RelOrgId", "RelType","RelOrgPrimaryRole","RelStart", "RelEnd")
+    lkup <- data.frame(OrgId = character(),
+                       OrgName = character(),
+                       OrgStart = character(),
+                       OrgEnd = character(),
+                       OrgRoleStart = character(),
+                       OrgRoleEnd = character(),
+                       RelOrgId = character(),
+                       RelType = character(),
+                       RelOrgPrimaryRole = character(),
+                       RelStart = character(),
+                       RelEnd = character(),
+                       stringsAsFactors=FALSE)
+
 
     # loop through each Organisation record
 
@@ -88,53 +101,67 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
         RoleIds   <- data.frame(Role = getOrg$Organisation$Roles$Role$id, stringsAsFactors=FALSE)
         RoleDates <- dplyr::bind_rows(getOrg$Organisation$Roles$Role$Date) %>%
             filter(Type == "Operational")
-        Roles     <- dplyr::bind_cols(RoleIds,RoleDates) %>%
-            filter(Role %in% c(PrimaryRole, NonPrimaryRole))
 
-        # add end column if missing and get period in specified role
-        if (!("End" %in% colnames(Roles))) {
-            Roles$End <- NA
+        # find periods in primary and non primary roles
+        RolesPrimary <- dplyr::bind_cols(RoleIds,RoleDates) %>%
+            filter(Role == PrimaryRole)
+        if (!("End" %in% colnames(RolesPrimary))) {
+            RolesPrimary$End <- NA
         }
 
-        # Find period org was in required role
-        if (any(!(is.na(Roles$End)))) {
-            RolePeriod <- data.frame(RoleStart = max(Roles$Start),
-                                     RoleEnd   = min(Roles$End, na.rm=TRUE),
-                                     stringsAsFactors=FALSE)
-        } else {
-            RolePeriod <- data.frame(RoleStart = max(Roles$Start),
-                                 RoleEnd   = NA,
-                                      stringsAsFactors=FALSE)
+
+        RolesNonPrimary <- dplyr::bind_cols(RoleIds,RoleDates) %>%
+            filter(Role == NonPrimaryRole)
+        if (!("End" %in% colnames(RolesNonPrimary))) {
+            RolesNonPrimary$End <- NA
         }
+        colnames(RolesNonPrimary) <- c("RoleNP", "Type","StartNP", "EndNP")
+
+        # Find periods org was in required role
+        RolePeriods <- inner_join(RolesPrimary, RolesNonPrimary, by="Type") %>%
+            mutate(RoleStart = pmax(Start,StartNP),
+#                   RoleEnd = if_else(is.na(End) & is.na(EndNP), NA_character_,
+#                                         pmin(End, EndNP, na.rm=TRUE))) %>%
+RoleEnd = pmin(End, EndNP, na.rm=TRUE)) %>%
+            select(RoleStart,RoleEnd)
 
         # keep only organisations in operation with required role after specified FromDate
-        if(RolePeriod$RoleEnd >= FromDate | is.na(RolePeriod$RoleEnd)) {
+        if(all(is.na(RolePeriods$RoleEnd))) {
             addOrg <- 1
+        } else if (any(RolePeriods$RoleEnd >= FromDate)) {
+           addOrg <- 1
+           RolePeriods <- RolePeriods %>%
+               filter(is.na(RolePeriods$RoleEnd) | RolePeriods$RoleEnd >= FromDate)
         } else {
             addOrg <- 0
         }
 
         # continue if Organisation record needs to be included in output
         if (addOrg == 1) {
-
+if (nrow(RolePeriods) >=2) {
+    allorgs[i,2]
+}
             # find related organisation dates
 
             # if no relationships exist populate parent and rel columns with NA
             if (!(is.list(getOrg$Organisation$Rels))) {
 
-               addrow <- data.frame(OrgId     = getOrg$Organisation$OrgId$extension,
+                # add row for each roleperiod
+                for (k in 1:nrow(RolePeriods)) {
+                    addrow <- data.frame(OrgId     = getOrg$Organisation$OrgId$extension,
                                     OrgName   = getOrg$Organisation$Name,
                                     OrgStart  = OrgDates$Start,
                                     OrgEnd    = OrgDates$End,
-                                    OrgRoleStart = RolePeriod$RoleStart,
-                                    OrgRoleEnd = RolePeriod$RoleEnd,
+                                    OrgRoleStart = RolePeriods$RoleStart[k],
+                                    OrgRoleEnd = RolePeriods$RoleEnd[k],
                                     RelOrgId  = NA,
                                     RelType   = NA,
                                     RelOrgPrimaryRole = NA,
                                     RelStart  = NA,
                                     RelEnd    = NA, stringsAsFactors=FALSE)
 
-               lkup <- bind_rows(lkup,addrow)
+                    lkup <- bind_rows(lkup,addrow)
+                }
 
             # otherwise find relationships
             } else {
@@ -157,25 +184,29 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
                 Rels       <- dplyr::bind_cols(RelTypeIds,RelDates,RelOrgs,RelRoles) %>%
                     filter(id     %in% RelPrimaryRoles &
                            typeid %in% RelTypes &
-                           (Start  <= RolePeriod$RoleEnd | is.na(RolePeriod$RoleEnd)) &
-                           (End >= RolePeriod$RoleStart | is.na(End)))
+                           (Start  <= RolePeriods$RoleEnd | is.na(RolePeriods$RoleEnd)) &
+                           (End >= RolePeriods$RoleStart | is.na(End)))
 
 
                 # if relationships exist but not of correct type & period populate parent and rel columns with NA
                 if (nrow(Rels) == 0) {
-                    addrow <- data.frame(OrgId = getOrg$Organisation$OrgId$extension,
+                    # add row for each roleperiod
+                    for (k in 1:nrow(RolePeriods)) {
+
+                        addrow <- data.frame(OrgId = getOrg$Organisation$OrgId$extension,
                                          OrgName = getOrg$Organisation$Name,
                                          OrgStart = OrgDates$Start,
                                          OrgEnd   = OrgDates$End,
-                                         OrgRoleStart = RolePeriod$RoleStart,
-                                         OrgRoleEnd = RolePeriod$RoleEnd,
+                                         OrgRoleStart = RolePeriods$RoleStart[k],
+                                         OrgRoleEnd = RolePeriods$RoleEnd[k],
                                          RelOrgId    = NA,
                                          RelType     = NA,
                                          RelOrgPrimaryRole = NA,
                                          RelStart    = NA,
                                          RelEnd      = NA, stringsAsFactors=FALSE)
 
-                    lkup <- bind_rows(lkup,addrow)
+                        lkup <- bind_rows(lkup,addrow)
+                    }
 
                 } else {
 
@@ -187,19 +218,23 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
                             Rels$End[j] <- NA
                         }
 
-                        addrow <- data.frame(OrgId = getOrg$Organisation$OrgId$extension,
+                        # add row for each roleperiod
+                        for (k in 1:nrow(RolePeriods)) {
+
+                            addrow <- data.frame(OrgId = getOrg$Organisation$OrgId$extension,
                                              OrgName = getOrg$Organisation$Name,
                                              OrgStart    = OrgDates$Start,
                                              OrgEnd      = OrgDates$End,
-                                             OrgRoleStart= RolePeriod$RoleStart,
-                                             OrgRoleEnd  = RolePeriod$RoleEnd,
+                                             OrgRoleStart= RolePeriods$RoleStart[k],
+                                             OrgRoleEnd  = RolePeriods$RoleEnd[k],
                                              RelOrgId    = Rels$extension[j],
                                              RelType     = Rels$typeid[j],
                                              RelOrgPrimaryRole = Rels$id[j],
                                              RelStart    = Rels$Start[j],
                                              RelEnd      = Rels$End[j], stringsAsFactors=FALSE)
 
-                        lkup <- bind_rows(lkup,addrow)
+                            lkup <- bind_rows(lkup,addrow)
+                        }
                     }
                 }
             }

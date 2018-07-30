@@ -26,7 +26,7 @@ testdata$CloseDate  <- as.Date(as.character(testdata$CloseDate),format="%Y%m%d")
 #### Create function output for comaprison
 #allorgs <- getODS(PrimaryRoleId="RO177",NonPrimaryRoleId = "RO76")
 #GP_CCG <- OrgRelLkp(allorgs,RelTypes = "RE4",RelPrimaryRoles = "RO98",FromDate = "2013-04-01")
-GP_CCG <- Output
+GP_CCG <- lkup
 GP_CCG$RelStart <- as.Date(as.character(GP_CCG$RelStart),format="%Y-%m-%d")
 GP_CCG$RelEnd   <- as.Date(as.character(GP_CCG$RelEnd),format="%Y-%m-%d")
 
