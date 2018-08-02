@@ -41,8 +41,8 @@ based on organisational relationship data.
 # return GP Practice to CCG Lookup to include all organisations effective on or after 01-04-2013
 OrgRelLkp(PrimaryRole    = "RO177",
           NonPrimaryRole = "RO76",
-          RelTypes       = "RE4"
-          RelRoles       = "RO98",
+          RelTypes       = "RE4",
+          RelPrimaryRoles       = "RO98",
           FromDate       = "2013-04-01")
 
 # return GP practice to CCG/PCT Lookup to include all organisations effective on or after 01-04-2012
