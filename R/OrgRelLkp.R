@@ -120,9 +120,7 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
         # Find periods org was in required role
         RolePeriods <- inner_join(RolesPrimary, RolesNonPrimary, by="Type") %>%
             mutate(RoleStart = pmax(Start,StartNP),
-#                   RoleEnd = if_else(is.na(End) & is.na(EndNP), NA_character_,
-#                                         pmin(End, EndNP, na.rm=TRUE))) %>%
-RoleEnd = pmin(End, EndNP, na.rm=TRUE)) %>%
+                   RoleEnd = pmin(End, EndNP, na.rm=TRUE)) %>%
             select(RoleStart,RoleEnd)
 
         # keep only organisations in operation with required role after specified FromDate
@@ -138,9 +136,7 @@ RoleEnd = pmin(End, EndNP, na.rm=TRUE)) %>%
 
         # continue if Organisation record needs to be included in output
         if (addOrg == 1) {
-if (nrow(RolePeriods) >=2) {
-    allorgs[i,2]
-}
+
             # find related organisation dates
 
             # if no relationships exist populate parent and rel columns with NA
@@ -181,11 +177,18 @@ if (nrow(RolePeriods) >=2) {
                                          stringsAsFactors=FALSE)
 
                 # only keep Rels that existed during Role Period
-                Rels       <- dplyr::bind_cols(RelTypeIds,RelDates,RelOrgs,RelRoles) %>%
-                    filter(id     %in% RelPrimaryRoles &
-                           typeid %in% RelTypes &
-                           (Start  <= RolePeriods$RoleEnd | is.na(RolePeriods$RoleEnd)) &
-                           (End >= RolePeriods$RoleStart | is.na(End)))
+                if(all(is.na(RolePeriods$RoleEnd))) {
+                    Rels       <- dplyr::bind_cols(RelTypeIds,RelDates,RelOrgs,RelRoles) %>%
+                        filter(id     %in% RelPrimaryRoles &
+                               typeid %in% RelTypes &
+                               (End >= min(RolePeriods$RoleStart) | is.na(End)))
+                } else {
+                    Rels       <- dplyr::bind_cols(RelTypeIds,RelDates,RelOrgs,RelRoles) %>%
+                        filter(id     %in% RelPrimaryRoles &
+                                   typeid %in% RelTypes &
+                                   (Start  <= max(RolePeriods$RoleEnd, na.rm=TRUE) | all(is.na(RolePeriods$RoleEnd))) &
+                                   (End >= min(RolePeriods$RoleStart) | is.na(End)))
+                }
 
 
                 # if relationships exist but not of correct type & period populate parent and rel columns with NA

@@ -26,7 +26,7 @@ testdata$CloseDate  <- as.Date(as.character(testdata$CloseDate),format="%Y%m%d")
 #### Create function output for comaprison
 #allorgs <- getODS(PrimaryRoleId="RO177",NonPrimaryRoleId = "RO76")
 #GP_CCG <- OrgRelLkp(allorgs,RelTypes = "RE4",RelPrimaryRoles = "RO98",FromDate = "2013-04-01")
-GP_CCG <- lkup
+GP_CCG <- output
 GP_CCG$RelStart <- as.Date(as.character(GP_CCG$RelStart),format="%Y-%m-%d")
 GP_CCG$RelEnd   <- as.Date(as.character(GP_CCG$RelEnd),format="%Y-%m-%d")
 
@@ -34,10 +34,10 @@ GP_CCG$RelEnd   <- as.Date(as.character(GP_CCG$RelEnd),format="%Y-%m-%d")
 #### test lookup as at 2018-05-17
 
 GP_CCG_20180517 <- GP_CCG %>%
-    filter(RelStart <= "2018-05-17" &
-           OrgRoleStart <= "2018-05-17" &
-           (RelEnd >= "2018-05-17" | is.na(RelEnd)) &
-           (OrgRoleEnd >= "2018-05-17" | is.na(OrgRoleEnd)))
+    filter(OrgRoleStart <= "2018-05-17" &
+               RelStart <= "2018-05-17" &
+            (OrgRoleEnd >= "2018-05-17" | is.na(OrgRoleEnd)) &
+               (RelEnd >= "2018-05-17" | is.na(RelEnd)))
 
 
 #### Make comparisons
@@ -66,10 +66,10 @@ QA_GP_CCG_only_20180517 <- GP_CCG_20180517 %>%
 #### test lookup as at 2015-05-26
 
 GP_CCG_20150526 <- GP_CCG %>%
-    filter(RelStart <= "2015-05-26" &
-               OrgRoleStart <= "2015-05-26" &
-               (RelEnd >= "2015-05-26" | is.na(RelEnd)) &
-               (OrgRoleEnd >= "2015-05-26" | is.na(OrgRoleEnd)))
+    filter(OrgRoleStart <= "2015-05-26" &
+               RelStart <= "2015-05-26" &
+               (OrgRoleEnd >= "2015-05-26" | is.na(OrgRoleEnd)) &
+               (RelEnd >= "2015-05-26" | is.na(RelEnd)))
 
 
 #### Make comparisons
