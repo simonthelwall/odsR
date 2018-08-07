@@ -4,5 +4,14 @@
 #' @docType package
 #' @name odsR
 NULL
-globalVariables(c("fromJSON")
+globalVariables(c("fromJSON",
+                  "Type",
+                  "Role",
+                  "Start",
+                  "StartNP",
+                  "End",
+                  "EndNP",
+                  "RoleStart",
+                  "RoleEnd",
+                  "typeid")
                 )
