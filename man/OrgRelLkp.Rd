@@ -39,14 +39,19 @@ based on organisational relationship data.
 
 \examples{
 # return GP Practice to CCG Lookup to include all organisations effective on or after 01-04-2013
+
+\dontrun{
 OrgRelLkp(PrimaryRole    = "RO177",
           NonPrimaryRole = "RO76",
           RelTypes       = "RE4",
           RelPrimaryRoles       = "RO98",
           FromDate       = "2013-04-01")
+}
 
 # return GP practice to CCG/PCT Lookup to include all organisations effective on or after 01-04-2012
+\dontrun{
 OrgRelLkp("RO177","RO76","RE4",c("RO98","RO179"),"2012-04-01")
+}
 
 }
 \seealso{
