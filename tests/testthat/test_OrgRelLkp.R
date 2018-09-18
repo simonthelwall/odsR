@@ -1,8 +1,8 @@
 context("test_OrgRelLkp")
 
-#### test lookup as at 2018-05-17
+#### test lookup as at 2018-08-31
 
-GP_CCG_20180517 <- GP_CCG %>%
+GP_CCG_20180831 <- GP_CCG %>%
     filter(OrgRoleStart <= "2018-05-17" &
                RelStart <= "2018-05-17" &
             (OrgRoleEnd >= "2018-05-17" | is.na(OrgRoleEnd)) &
@@ -11,21 +11,26 @@ GP_CCG_20180517 <- GP_CCG %>%
 #### Make comparisons
 
 # records in both but discrepant
-QA_discreps_20180517 <- testdata %>%
-    filter(Effdate == "20180517") %>%
-    inner_join(GP_CCG_20180517,by = c("OrganisationCode" = "OrgId")) %>%
+# postcodes checked manually with commented out code.
+# several typos in EPRACCUR were identified and also
+# where branch surgeries exist EPRACCUR uses the postcode of the first branch alphabetically
+# whereas the API uses the main site and registered postcode for the group
+QA_discreps_20180831 <- testdata %>%
+    filter(Effdate == "20180831") %>%
+    inner_join(GP_CCG_20180831,by = c("OrganisationCode" = "OrgId")) %>%
     filter(Commissioner != RelOrgId)
+# filter(Commissioner != RelOrgId | Postcode != OrgPostCode)
 
 
 # records in testdata only
-QA_epraccur_only_20180517 <- testdata %>%
-    filter(Effdate == "20180517") %>%
-    anti_join(GP_CCG_20180517,by = c("OrganisationCode" = "OrgId"))
+QA_epraccur_only_20180831 <- testdata %>%
+    filter(Effdate == "20180831") %>%
+    anti_join(GP_CCG_20180831,by = c("OrganisationCode" = "OrgId"))
 
 
 # records in function output only
-QA_GP_CCG_only_20180517 <- GP_CCG_20180517 %>%
-    anti_join(filter(testdata,Effdate == "20180517"),
+QA_GP_CCG_only_20180831 <- GP_CCG_20180831 %>%
+    anti_join(filter(testdata,Effdate == "20180831"),
               by = c("OrgId" = "OrganisationCode"))
 
 #### test lookup as at 2015-05-26
@@ -37,7 +42,7 @@ GP_CCG_20150526 <- GP_CCG %>%
                (RelEnd >= "2015-05-26" | is.na(RelEnd)))
 
 
-#### Make comparisons
+#### Make comparisons - postcode not compared as only most recent kept on ODS API record
 
 # records in both but discrepant
 QA_discreps_20150526 <- testdata %>%
@@ -68,15 +73,15 @@ QA_GP_CCG_only_20150526 <- GP_CCG_20150526 %>%
 
 
 test_that("function output matches testdata",{
-    expect_equal(nrow(QA_discreps_20180517),
-                 0,check.attributes=FALSE, check.names=FALSE,info="test discreps 20180517")
+    expect_equal(nrow(QA_discreps_20180831),
+                 0,check.attributes=FALSE, check.names=FALSE,info="test discreps 20180831")
     expect_equal(nrow(QA_discreps_20150526),
                  0,check.attributes=FALSE, check.names=FALSE,info="test discreps 20150526")
-    expect_equal(nrow(QA_epraccur_only_20180517),
-                 0,check.attributes=FALSE, check.names=FALSE,info="test epraccur only 20180517")
+    expect_equal(nrow(QA_epraccur_only_20180831),
+                 0,check.attributes=FALSE, check.names=FALSE,info="test epraccur only 20180831")
     expect_equal(nrow(filter(QA_epraccur_only_20150526, !(OrganisationCode %in% c("Y04694")))),
                  0,check.attributes=FALSE, check.names=FALSE,info="test epraccur only 20150526")
-    expect_equal(nrow(QA_GP_CCG_only_20180517),
+    expect_equal(nrow(QA_GP_CCG_only_20180831),
                  0,check.attributes=FALSE, check.names=FALSE,info="test default")
     expect_equal(nrow(filter(QA_GP_CCG_only_20150526, !(OrgId %in% c("Y01792","H85039")))),
                  0,check.attributes=FALSE, check.names=FALSE,info="test default")

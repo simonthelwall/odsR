@@ -32,7 +32,9 @@ Generates an organisational lookup table from the NHS Digital ODS ORD API
 based on organisational relationship data.
 }
 \section{Notes}{
- View the NHS Digital ODS API Implementation Guide at
+ This function is experimental and has only been thoroughly QAd for use with the arguments
+         presented in the first example in order to generate GP Practice to CCG lookup tables. \cr \cr
+         View the NHS Digital ODS API Implementation Guide at
          \url{https://developer.nhs.uk/library/identifiers/ods-ord-api-implementation-guide/} \cr \cr
          View the NHS Digital ODS API Suite at \url{https://directory.spineservices.nhs.uk/ODSAPISuite}
 }
@@ -44,7 +46,7 @@ based on organisational relationship data.
 OrgRelLkp(PrimaryRole    = "RO177",
           NonPrimaryRole = "RO76",
           RelTypes       = "RE4",
-          RelPrimaryRoles       = "RO98",
+          RelPrimaryRoles = "RO98",
           FromDate       = "2013-04-01")
 }
 

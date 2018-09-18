@@ -19,7 +19,9 @@
 #' for the relationship.
 #'
 #'
-#' @section Notes: View the NHS Digital ODS API Implementation Guide at
+#' @section Notes: This function is experimental and has only been thoroughly QAd for use with the arguments
+#'          presented in the first example in order to generate GP Practice to CCG lookup tables. \cr \cr
+#'          View the NHS Digital ODS API Implementation Guide at
 #'          \url{https://developer.nhs.uk/library/identifiers/ods-ord-api-implementation-guide/} \cr \cr
 #'          View the NHS Digital ODS API Suite at \url{https://directory.spineservices.nhs.uk/ODSAPISuite}
 #'
@@ -30,7 +32,7 @@
 #' OrgRelLkp(PrimaryRole    = "RO177",
 #'           NonPrimaryRole = "RO76",
 #'           RelTypes       = "RE4",
-#'           RelPrimaryRoles       = "RO98",
+#'           RelPrimaryRoles = "RO98",
 #'           FromDate       = "2013-04-01")
 #' }
 #'
@@ -56,8 +58,10 @@
 OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, FromDate) {
 
     # display experimental message
-    message("Please Note that this function is experimental and has not been thoroughly
-             QAd for every possible set of arguments.")
+    message("Please Note that this function is experimental and has not been thoroughly QAd
+             for every possible set of arguments. It has been written to enable the generation of GP Practice
+             to CCG lookup tables and is therefore only approved with the following arguments:
+             PrimaryRole RO177, NonPrimaryRole RO76, Reltypes RE4, RelPrimaryRoles RO98, FromDate 2013-04-01")
 
     # retrieve all organisations to include records for
     allorgs <- getODS(PrimaryRoleId=PrimaryRole,NonPrimaryRoleId=NonPrimaryRole) %>%
