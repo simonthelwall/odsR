@@ -4,7 +4,8 @@
 \alias{addorgname}
 \title{addorgname}
 \usage{
-addorgname(data, CodeCol = "OrgId", NameCol = "OrgName", insert = TRUE)
+addorgname(data, CodeCol = "OrgId", NameCol = "OrgName",
+  insert = TRUE)
 }
 \arguments{
 \item{data}{data.frame containing the Organisation Codes to add Organisation Names to, unquoted string, no default}
@@ -36,6 +37,7 @@ addorgname(codelist, NameCol="MyNewColumnName", insert=FALSE)
 
 }
 \seealso{
-Other odsR package functions: \code{\link{getODSfull}},
-  \code{\link{getODS}}
+Other odsR package functions: \code{\link{OrgRelLkp}},
+  \code{\link{getODSfull}}, \code{\link{getODS}}
 }
+\concept{odsR package functions}
