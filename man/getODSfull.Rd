@@ -32,3 +32,4 @@ getODSfull(ODSCode="RRF12")
 Other odsR package functions: \code{\link{OrgRelLkp}},
   \code{\link{addorgname}}, \code{\link{getODS}}
 }
+\concept{odsR package functions}

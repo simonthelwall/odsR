@@ -58,3 +58,4 @@ OrgRelLkp("RO177","RO76","RE4",c("RO98","RO179"),"2012-04-01")
 Other odsR package functions: \code{\link{addorgname}},
   \code{\link{getODSfull}}, \code{\link{getODS}}
 }
+\concept{odsR package functions}

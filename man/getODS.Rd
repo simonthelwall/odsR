@@ -64,3 +64,4 @@ getODS(Name="Woodseats Medical Centre")
 Other odsR package functions: \code{\link{OrgRelLkp}},
   \code{\link{addorgname}}, \code{\link{getODSfull}}
 }
+\concept{odsR package functions}
