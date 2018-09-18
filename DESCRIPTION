@@ -7,8 +7,8 @@ Maintainer: The package maintainer is <georgina.anderson@phe.gov.uk>
 Description: Functions to facilitate extraction of ODS data from the NHS Digital ODS ORD API.
     getODS: Extracts summary data for all organisation meeting the specified filter criteria and outputs in data.frame format.
     getODSfull: Extracts full data for a single organisation and outputs in list format.
-    addorgname: Adds an organisation to a data frame containing organisation codes
-    OrgRelLkp: Generates an organisational lookup table using organisational relationship data
+    addorgname: Adds an organisation to a data frame containing organisation codes.
+    OrgRelLkp: Generates an organisational lookup table using organisational relationship data.
 BugReports: https://github.com/PublicHealthEngland/odsR/issues
 Depends: R (>= 3.4.0)
 License: GPL-3
