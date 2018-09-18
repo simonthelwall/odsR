@@ -48,12 +48,9 @@
 #' @family odsR package functions
 # -------------------------------------------------------------------------------------------------
 
-# PrimaryRole = "RO177"
-# NonPrimaryRole = "RO76"
-# RelTypes = "RE4"
-# RelPrimaryRoles = "RO98"
-# FromDate = "2013-04-01"
-
+# changes for testing:
+# added postcode field
+# changed dates to date format
 
 # create function to generate Organisation lookup data.frame
 OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, FromDate) {
@@ -67,20 +64,18 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
         unique()
 
     # Create empty Lookup dataframe
-#    lkup <- setNames(data.frame(matrix(ncol = 11, nrow = 0)),
-#                     c("OrgId","OrgName","OrgStart","OrgEnd","OrgRoleStart","OrgRoleEnd",
-#                       "RelOrgId", "RelType","RelOrgPrimaryRole","RelStart", "RelEnd")
-    lkup <- data.frame(OrgId = character(),
-                       OrgName = character(),
-                       OrgStart = character(),
-                       OrgEnd = character(),
-                       OrgRoleStart = character(),
-                       OrgRoleEnd = character(),
-                       RelOrgId = character(),
-                       RelType = character(),
+    lkup <- data.frame(OrgId       = character(),
+                       OrgName     = character(),
+                       OrgPostCode = character(),
+                       OrgStart    = as.Date(character()),
+                       OrgEnd      = as.Date(character()),
+                       OrgRoleStart = as.Date(character()),
+                       OrgRoleEnd  = as.Date(character()),
+                       RelOrgId    = character(),
+                       RelType     = character(),
                        RelOrgPrimaryRole = character(),
-                       RelStart = character(),
-                       RelEnd = character(),
+                       RelStart    = as.Date(character()),
+                       RelEnd      = as.Date(character()),
                        stringsAsFactors=FALSE)
 
 
@@ -101,7 +96,6 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
             OrgDates$End <- NA
         }
 
-
         # get dates when organisation was operational in the role specified
         RoleIds   <- data.frame(Role = getOrg$Organisation$Roles$Role$id, stringsAsFactors=FALSE)
         RoleDates <- dplyr::bind_rows(getOrg$Organisation$Roles$Role$Date) %>%
@@ -113,7 +107,6 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
         if (!("End" %in% colnames(RolesPrimary))) {
             RolesPrimary$End <- NA
         }
-
 
         RolesNonPrimary <- dplyr::bind_cols(RoleIds,RoleDates) %>%
             filter(Role == NonPrimaryRole)
@@ -149,17 +142,18 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
 
                 # add row for each roleperiod
                 for (k in 1:nrow(RolePeriods)) {
-                    addrow <- data.frame(OrgId     = getOrg$Organisation$OrgId$extension,
-                                    OrgName   = getOrg$Organisation$Name,
-                                    OrgStart  = OrgDates$Start,
-                                    OrgEnd    = OrgDates$End,
-                                    OrgRoleStart = RolePeriods$RoleStart[k],
-                                    OrgRoleEnd = RolePeriods$RoleEnd[k],
-                                    RelOrgId  = NA,
-                                    RelType   = NA,
+                    addrow <- data.frame(OrgId   = getOrg$Organisation$OrgId$extension,
+                                    OrgName      = getOrg$Organisation$Name,
+                                    OrgPostCode  = getOrg$Organisation$GeoLoc$Location$PostCode,
+                                    OrgStart     = as.Date(OrgDates$Start, origin = "1900-01-01"),
+                                    OrgEnd       = as.Date(OrgDates$End, origin = "1900-01-01"),
+                                    OrgRoleStart = as.Date(RolePeriods$RoleStart[k], origin = "1900-01-01"),
+                                    OrgRoleEnd   = as.Date(RolePeriods$RoleEnd[k], origin = "1900-01-01"),
+                                    RelOrgId     = NA,
+                                    RelType      = NA,
                                     RelOrgPrimaryRole = NA,
-                                    RelStart  = NA,
-                                    RelEnd    = NA, stringsAsFactors=FALSE)
+                                    RelStart     = NA,
+                                    RelEnd       = NA, stringsAsFactors=FALSE)
 
                     lkup <- bind_rows(lkup,addrow)
                 }
@@ -201,17 +195,18 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
                     # add row for each roleperiod
                     for (k in 1:nrow(RolePeriods)) {
 
-                        addrow <- data.frame(OrgId = getOrg$Organisation$OrgId$extension,
-                                         OrgName = getOrg$Organisation$Name,
-                                         OrgStart = OrgDates$Start,
-                                         OrgEnd   = OrgDates$End,
-                                         OrgRoleStart = RolePeriods$RoleStart[k],
-                                         OrgRoleEnd = RolePeriods$RoleEnd[k],
-                                         RelOrgId    = NA,
-                                         RelType     = NA,
+                        addrow <- data.frame(OrgId    = getOrg$Organisation$OrgId$extension,
+                                         OrgName      = getOrg$Organisation$Name,
+                                         OrgPostCode  = getOrg$Organisation$GeoLoc$Location$PostCode,
+                                         OrgStart     = as.Date(OrgDates$Start, origin = "1900-01-01"),
+                                         OrgEnd       = as.Date(OrgDates$End, origin = "1900-01-01"),
+                                         OrgRoleStart = as.Date(RolePeriods$RoleStart[k],origin = "1900-01-01"),
+                                         OrgRoleEnd   = as.Date(RolePeriods$RoleEnd[k],origin = "1900-01-01"),
+                                         RelOrgId     = NA,
+                                         RelType      = NA,
                                          RelOrgPrimaryRole = NA,
-                                         RelStart    = NA,
-                                         RelEnd      = NA, stringsAsFactors=FALSE)
+                                         RelStart     = NA,
+                                         RelEnd       = NA, stringsAsFactors=FALSE)
 
                         lkup <- bind_rows(lkup,addrow)
                     }
@@ -229,17 +224,18 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
                         # add row for each roleperiod
                         for (k in 1:nrow(RolePeriods)) {
 
-                            addrow <- data.frame(OrgId = getOrg$Organisation$OrgId$extension,
-                                             OrgName = getOrg$Organisation$Name,
-                                             OrgStart    = OrgDates$Start,
-                                             OrgEnd      = OrgDates$End,
-                                             OrgRoleStart= RolePeriods$RoleStart[k],
-                                             OrgRoleEnd  = RolePeriods$RoleEnd[k],
-                                             RelOrgId    = Rels$extension[j],
-                                             RelType     = Rels$typeid[j],
+                            addrow <- data.frame(OrgId    = getOrg$Organisation$OrgId$extension,
+                                             OrgName      = getOrg$Organisation$Name,
+                                             OrgPostCode  = getOrg$Organisation$GeoLoc$Location$PostCode,
+                                             OrgStart     = as.Date(OrgDates$Start, origin = "1900-01-01"),
+                                             OrgEnd       = as.Date(OrgDates$End, origin = "1900-01-01"),
+                                             OrgRoleStart = as.Date(RolePeriods$RoleStart[k],origin = "1900-01-01"),
+                                             OrgRoleEnd   = as.Date(RolePeriods$RoleEnd[k],origin = "1900-01-01"),
+                                             RelOrgId     = Rels$extension[j],
+                                             RelType      = Rels$typeid[j],
                                              RelOrgPrimaryRole = Rels$id[j],
-                                             RelStart    = Rels$Start[j],
-                                             RelEnd      = Rels$End[j], stringsAsFactors=FALSE)
+                                             RelStart     = as.Date(Rels$Start[j],origin = "1900-01-01"),
+                                             RelEnd       = as.Date(Rels$End[j],origin = "1900-01-01"), stringsAsFactors=FALSE)
 
                             lkup <- bind_rows(lkup,addrow)
                         }
@@ -250,10 +246,6 @@ OrgRelLkp <- function(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, Fr
     }
     return(lkup)
 }
-
-
-
-
 
 
 

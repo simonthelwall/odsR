@@ -17,7 +17,7 @@ testdata <- do.call("rbind", sapply(testfiles, read.csv, stringsAsFactors=FALSE,
     mutate(Effdate = sub(".csv.*","",
                      sub("./tests/testthat/epraccur_","",row.names(.), ignore.case=TRUE))) %>%
     filter(StatusCode != "C" & PrescribingSetting == 4) %>%
-    select(OrganisationCode, Name, OpenDate, CloseDate, StatusCode, Commissioner,
+    select(OrganisationCode, Name, Postcode, OpenDate, CloseDate, StatusCode, Commissioner,
            JoinProviderPurchaserDate, LeftProviderPurchaserDate,
            ProviderPurchaser, PrescribingSetting, Effdate)
 
@@ -28,8 +28,8 @@ testdata$CloseDate  <- as.Date(as.character(testdata$CloseDate),format="%Y%m%d")
 
 #### Create function output for saving
 GP_CCG <- OrgRelLkp("RO177","RO76","RE4","RO98","2013-04-01")
-GP_CCG$RelStart <- as.Date(as.character(GP_CCG$RelStart),format="%Y-%m-%d")
-GP_CCG$RelEnd   <- as.Date(as.character(GP_CCG$RelEnd),format="%Y-%m-%d")
+#GP_CCG$RelStart <- as.Date(as.character(GP_CCG$RelStart),format="%Y-%m-%d")
+#GP_CCG$RelEnd   <- as.Date(as.character(GP_CCG$RelEnd),format="%Y-%m-%d")
 
 
 # use this devtools code to save testdata to package (hidden from users)
