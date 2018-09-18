@@ -3,10 +3,10 @@ context("test_OrgRelLkp")
 #### test lookup as at 2018-08-31
 
 GP_CCG_20180831 <- GP_CCG %>%
-    filter(OrgRoleStart <= "2018-05-17" &
-               RelStart <= "2018-05-17" &
-            (OrgRoleEnd >= "2018-05-17" | is.na(OrgRoleEnd)) &
-               (RelEnd >= "2018-05-17" | is.na(RelEnd)))
+    filter(OrgRoleStart <= "2018-08-31" &
+               RelStart <= "2018-08-31" &
+            (OrgRoleEnd >= "2018-08-31" | is.na(OrgRoleEnd)) &
+               (RelEnd >= "2018-08-31" | is.na(RelEnd)))
 
 #### Make comparisons
 
@@ -19,7 +19,7 @@ QA_discreps_20180831 <- testdata %>%
     filter(Effdate == "20180831") %>%
     inner_join(GP_CCG_20180831,by = c("OrganisationCode" = "OrgId")) %>%
     filter(Commissioner != RelOrgId)
-# filter(Commissioner != RelOrgId | Postcode != OrgPostCode)
+#   filter(Commissioner != RelOrgId | Postcode != OrgPostCode)
 
 
 # records in testdata only
@@ -65,7 +65,7 @@ QA_GP_CCG_only_20150526 <- GP_CCG_20150526 %>%
 #### Perform tests
 
 # exclusions - manual QA has confirmed function output correct and testdata incorrect where
-# discrepacnies exist as follows, according to current API output:
+# discrepacnies exist as at 2018-05-26 as follows, according to current API output:
 # Y01792 - should be in function output for 2015-05-26, missing from testdata
 # H85039 - should be in function output for 2015-05-26, missing from testdata
 # Y04694 - shouldn't be output in testdata - does not have NonPrimaryRole of RO76
