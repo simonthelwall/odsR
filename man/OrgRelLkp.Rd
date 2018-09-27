@@ -4,27 +4,31 @@
 \alias{OrgRelLkp}
 \title{OrgRelLkp}
 \usage{
-OrgRelLkp(PrimaryRole, NonPrimaryRole, RelTypes, RelPrimaryRoles, FromDate)
+OrgRelLkp(PrimaryRole, NonPrimaryRole = "All", RelTypes = "None",
+  RelPrimaryRoles = "None", FromDate)
 }
 \arguments{
 \item{PrimaryRole}{The Primary Role code for organisations to be included in the lookup;
 quoted string, no default}
 
-\item{NonPrimaryRole}{The Non Primary Role code for organisations to be included in the lookup;
-quoted string, no default}
+\item{NonPrimaryRole}{The Non Primary Role code for organisations to be included in the lookup,
+or 'All' to include all Non Primary Role Codes;
+quoted string, default = "All"}
 
-\item{RelTypes}{The Named Relationship Types for related organisations to be included in the lookup;
-character vector, no default}
+\item{RelTypes}{The Named Relationship Types for related organisations to be included in the lookup,
+or 'None' to exclude Relationships from output;
+character vector, default = "None"}
 
-\item{RelPrimaryRoles}{The Primary Role Ids for related organisations to be included in the lookup;
-character vector, no default}
+\item{RelPrimaryRoles}{The Primary Role Ids for related organisations to be included in the lookup,
+or 'None' to exclude relationships from output;
+character vector, default = "None"}
 
 \item{FromDate}{The effective date from which to include Organisations operational on or after;
 character string in the format "yyyy-mm-dd", no default}
 }
 \value{
-returns a data.frame of Organisation codes, names, start dates and end dates plus the
-organisations (code & name) they are related to and associated start and end dates
+returns a data.frame of Organisation codes, names, start dates and end dates plus the start and end dates
+that the organisation was in the specified role and related organisation codes & names and associated start and end dates
 for the relationship.
 }
 \description{
@@ -40,8 +44,12 @@ based on organisational relationship data.
 }
 
 \examples{
-# return GP Practice to CCG Lookup to include all organisations effective on or after 01-04-2013
+# return basic NHS Trust lookup without relationships to other organisation types
+\dontrun{
+#' OrgRelLkp(PrimaryRole = "RO197",FromDate="2013-04-01")
+}
 
+# return GP Practice to CCG Lookup to include all organisations effective on or after 01-04-2013
 \dontrun{
 OrgRelLkp(PrimaryRole    = "RO177",
           NonPrimaryRole = "RO76",
