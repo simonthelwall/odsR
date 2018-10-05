@@ -29,6 +29,7 @@
 #'          View the NHS Digital ODS API Suite at \url{https://directory.spineservices.nhs.uk/ODSAPISuite}
 #'
 #' @examples
+#'
 #' # return basic NHS Trust lookup without relationships to other organisation types
 #' \dontrun{
 #' #' OrgRelLkp(PrimaryRole = "RO197",FromDate="2013-04-01")
