@@ -1,14 +1,17 @@
 Package: odsR
 Type: Package
 Title: Extract and manipulate ODS data from the NHS Digital ODS ORD API
-Version: 1.0.9
-Author: c(person("Anderson", "Georgina", , "georgina.anderson@phe.gov.uk", c("aut", "cre"))
+Version: 1.0.9.9000
+Authors@R: c(person("Georgina", "Anderson", , "georgina.anderson@phe.gov.uk", c("aut", "cre")),
+    person("Simon", "Thelwall", , "simon.thelwall@gmail.com", c("ctb"), 
+      comment = c(ORCID = "0000-0002-0434-2724")))
 Maintainer: The package maintainer is <georgina.anderson@phe.gov.uk>
 Description: Functions to facilitate extraction of ODS data from the NHS Digital ODS ORD API.
     getODS: Extracts summary data for all organisation meeting the specified filter criteria and outputs in data.frame format.
     getODSfull: Extracts full data for a single organisation and outputs in list format.
     addorgname: Adds an organisation to a data frame containing organisation codes.
     OrgRelLkp: Generates an organisational lookup table using organisational relationship data.
+URL: https://github.com/PublicHealthEngland/odsR
 BugReports: https://github.com/PublicHealthEngland/odsR/issues
 Depends: R (>= 3.4.0)
 License: GPL-3
@@ -23,5 +26,5 @@ Suggests:
     readxl,
     rmarkdown,
     testthat,
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr

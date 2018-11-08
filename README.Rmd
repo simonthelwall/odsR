@@ -13,10 +13,7 @@ knitr::opts_chunk$set(
 ```
 
 [![Build
-Status](https://travis-ci.org/PublicHealthEngland/odsR.svg?branch=master)](https://travis-ci.org/PublicHealthEngland/odsR?branch=master)
-
-
-[![Coverage
+Status](https://travis-ci.org/PublicHealthEngland/odsR.svg?branch=master)](https://travis-ci.org/PublicHealthEngland/odsR?branch=master) [![Coverage
 Status](https://coveralls.io/repos/github/PublicHealthEngland/odsR/badge.svg?branch=master)](https://coveralls.io/github/PublicHealthEngland/odsR?branch=master)
 
 
@@ -24,6 +21,10 @@ Status](https://coveralls.io/repos/github/PublicHealthEngland/odsR/badge.svg?bra
 <br/>
 
 # odsR Package
+
+[NHS Digital](https://digital.nhs.uk/) maintain data on organisation structures within England's National Health Service and other healthcare providers through their [Organisation Data Service](https://digital.nhs.uk/services/organisation-data-service). 
+They provide an [API](https://digital.nhs.uk/services/organisation-data-service/apis-for-the-organisation-data-service) through which one can query the data they curate. 
+
 This is an R package to facilitate the extraction of NHS organisation data from the NHS Digital ODS API into the R environment.
 
 Any feedback would be appreciated and can be provided using the Issues section of the GitHub repository, or by emailing PHDS@phe.gov.uk. Please note that whilst we are happy to share this package we have limited capacity to invest time in its further development.
@@ -65,6 +66,10 @@ install.packages(path_to_file, repos = NULL, type=“source”)
 
 <br/>
 <br/>
+
+## Documentation
+
+Details of functions provided can be found at [https://publichealthengland.github.io/odsR/](https://publichealthengland.github.io/odsR/).
 
 ## Package Versioning
 Following installation of this package, type ‘packageVersion(“odsR”)’ in the R console to show the package version. If it is suffixed with a 9000 number then you are using an unapproved development version.
