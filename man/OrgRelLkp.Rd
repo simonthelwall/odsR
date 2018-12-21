@@ -44,6 +44,7 @@ based on organisational relationship data.
 }
 
 \examples{
+
 # return basic NHS Trust lookup without relationships to other organisation types
 \dontrun{
 #' OrgRelLkp(PrimaryRole = "RO197",FromDate="2013-04-01")
