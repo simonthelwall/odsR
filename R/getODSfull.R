@@ -16,10 +16,6 @@
 #' # return full Organisation data for RRF12
 #' getODSfull(ODSCode="RRF12")
 #'
-#' @import dplyr
-#' @import jsonlite
-#' @import httr
-#' @importFrom utils URLencode
 #'
 #' @export
 #'
@@ -33,10 +29,10 @@ getODSfull <- function(ODSCode) {
     urlfull <- utils::URLencode(paste0("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/",ODSCode,"?_format=application/json",sep=""))
 
     # better to set config elsewhere - not within function ??
-    set_config(config(ssl_verifypeer = 0L))
+    httr::set_config(httr::config(ssl_verifypeer = 0L))
 
-    httpResponse <- GET(urlfull, accept_json())
-    getODSfull <- fromJSON(content(httpResponse, "text", encoding="UTF-8"))
+    httpResponse <- httr::GET(urlfull, httr::accept_json())
+    getODSfull <- jsonlite::fromJSON(httr::content(httpResponse, "text", encoding="UTF-8"))
 
   return(getODSfull)
 }

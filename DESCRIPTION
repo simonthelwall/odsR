@@ -2,7 +2,8 @@ Package: odsR
 Type: Package
 Title: Extract and manipulate ODS data from the NHS Digital ODS ORD API
 Version: 1.0.9.9000
-Author: c(person("Anderson", "Georgina", , "georgina.anderson@phe.gov.uk", c("aut", "cre"))
+Author: c(person("Anderson", "Georgina", , "georgina.anderson@phe.gov.uk", c("aut", "cre")),
+    person("Simon", "Thelwall", , "simon.thelwall@phe.gov.uk", c("ctb"), comment = c(ORCID = "0000-0002-0434-2724")))
 Maintainer: The package maintainer is <georgina.anderson@phe.gov.uk>
 Description: Functions to facilitate extraction of ODS data from the NHS Digital ODS ORD API.
     getODS: Extracts summary data for all organisation meeting the specified filter criteria and outputs in data.frame format.
@@ -19,11 +20,15 @@ Imports:
     jsonlite,
     httr,
     tidyr,
-    purrr
+    purrr,
+    utils,
+    assertthat
 Suggests: 
     knitr,
     readxl,
     rmarkdown,
     testthat,
-RoxygenNote: 6.1.0
+    tabulizer,
+    lubridate
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr

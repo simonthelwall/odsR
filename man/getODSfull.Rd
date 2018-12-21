@@ -27,6 +27,7 @@ Extracts full ODS data for a single organisation from the NHS Digital ODS ORD AP
 # return full Organisation data for RRF12
 getODSfull(ODSCode="RRF12")
 
+
 }
 \seealso{
 Other odsR package functions: \code{\link{OrgRelLkp}},
